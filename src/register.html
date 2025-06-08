@@ -21,21 +21,30 @@
         <input type="password" placeholder="Please enter your password" />
         <br/><br/>
         Gender:
-        <br>
-        <input type="radio" name="gender" value="Male"/> Male
-        <br>
-        <input type="radio" name="gender" value="Female"/> Female
-        <br>
-        <input type="radio" name="gender" value="Other"/> Other
-        <br><br/>
-
-        Birth Date: <input type="date" placeholder="Please enter your password" />
+        <select name="Gender" id="Gender">
+            <option value="">Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+        <br><br/>   
+        Date:
+        <input type="date" placeholder="Choose a Date" />
         <br/><br/>
         Phone Number:
         <input type="tel" placeholder="Please enter your phone number" />
         <br/><br/>
-    
-        Address:<input type="text" placeholder="Please enter your addess" />
+        Address: 
+        <input type="text" placeholder="Please enter your addess" />
+        <br/><br/>
+        Zip Code:
+        <input type="Zip Code" placeholder="Please enter your Zip Code" />
+        <br/><br/>
+        <input type="checkbox" id="terms" name="terms">
+        <label for="terms">I agree to the terms and conditions</label>
+        <br/><br/>
+        <input type="checkbox" id="newsletter" name="newsletter">
+        <label for="newsletter">Subscribe to newsletter</label>
         <br/><br/>
         <button type="submit">Register</button>
         <br/>
