@@ -1,62 +1,104 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Register Page</title>
-    </head>
-    <body>
-        <h1>Register Page</h1>
-        <img src="../images/bank.jpg" alt="Bank Image">
-        <br/><br/>  
-        ID:
-        <input type="text" placeholder="Please enter your ID" tagname="id" />
-        <br/><br/>
-        First Name:
-        <input type="text" placeholder="Please enter your first name" tagname="firstname" />
-        <br/><br/>
-        Last Name:
-        <input type="text" placeholder="Please enter your last name" tagname="lastname"/>
-        <br/><br/>
-        Email:
-        <input type="email" placeholder="Please enter your email" tagname="email" />
-        <br/><br/>
-        Password:
-        <input type="password" placeholder="Please enter your password" tagname="password" />
-        <br/><br/>
-        Gender:
-        <select name="Gender" id="Gender">
-            <option value="">Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select>
-        <br><br/>   
-        Date:
-        <input type="date" placeholder="Choose a Date" />
-        <br/><br/>
-        Phone Number:
-        <input type="tel" placeholder="Please enter your phone number" />
-        <br/><br/>
-        Address: 
-        <input type="text" placeholder="Please enter your addess" />
-        <br/><br/>
-        Zip Code:
-        <input type="Zip Code" placeholder="Please enter your Zip Code" />
-        <br/><br/>
-        <input type="checkbox" id="terms" name="terms">
-        <label for="terms">I agree to the terms and conditions</label>
-        <br/><br/>
-        <input type="checkbox" id="newsletter" name="newsletter">
-        <label for="newsletter">Subscribe to newsletter</label>
-        <br/><br/>
-        <button type="submit">Register</button>
-        <br/>
-        <p>Already have an account?</p>
-            <a href="login.html">Login here</a> 
-            <br>
-        <ol>    
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About Us</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
-        </ol>
-   
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Registration</title>
+  <link rel="stylesheet" href="../style/styles.css">
+</head>
+<body>
+  <form id="registrationForm" class="form" novalidate autocomplete="off">
+    <h1 class="form-title">User Registration</h1>
+
+    <div class="form-row">
+      <label for="id" class="required">ID Number</label>
+      <input id="id" name="id" type="text" placeholder="Enter your ID number"
+             required pattern="\d{9}" title="Must be exactly 9 digits">
+    </div>
+
+    <div class="form-row">
+      <label for="firstname" class="required">First Name</label>
+      <input id="firstname" name="firstname" type="text" placeholder="Enter your first name"
+             required pattern="[A-Za-z]+" title="Letters only">
+    </div>
+
+    <div class="form-row">
+      <label for="lastname" class="required">Last Name</label>
+      <input id="lastname" name="lastname" type="text" placeholder="Enter your last name"
+             required pattern="[A-Za-z]+" title="Letters only">
+    </div>
+
+    <div class="form-row">
+      <label for="date_of_birth" class="required">Date of Birth</label>
+      <input id="date_of_birth" name="date_of_birth" type="date" required>
+    </div>
+
+    <div class="form-row">
+      <label for="email" class="required">Email</label>
+      <input id="email" name="email" type="email" placeholder="you@example.com" required>
+    </div>
+
+    <div class="form-row">
+      <label for="password" class="required">Password</label>
+      <input id="password" name="password" type="password" placeholder="8–16 characters"
+             required minlength="8" maxlength="16" title="8–16 characters">
+    </div>
+
+    <div class="form-row">
+      <label for="phone_number" class="required">Phone Number</label>
+      <input id="phone_number" name="phone_number" type="tel" placeholder="+972541234567"
+             required pattern="^\+?\d{9,15}$" title="9–15 digits, may start with +">
+    </div>
+
+    <div class="form-row">
+      <label for="address" class="required">Address</label>
+      <input id="address" name="address" type="text" placeholder="Street, City" required>
+    </div>
+
+    <div class="form-row">
+      <label for="zipcode" class="required">ZIP / Postal Code</label>
+      <input id="zipcode" name="zipcode" type="text" placeholder="12345"
+             required pattern="\d{5,10}" title="5–10 digits">
+    </div>
+
+    <button type="submit" class="btn-primary">Register</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('registrationForm');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      // Remove existing error popups
+      form.querySelectorAll('.error-message').forEach(el => el.remove());
+
+      let valid = true;
+      form.querySelectorAll('input').forEach(input => {
+        if (!input.checkValidity()) {
+          valid = false;
+          const msg = input.validationMessage;
+          const popup = document.createElement('span');
+          popup.className = 'error-message';
+          popup.textContent = msg;
+          input.classList.add('invalid');
+          input.parentElement.append(popup);
+        } else {
+          input.classList.remove('invalid');
+        }
+      });
+
+      if (valid) form.submit();
+    });
+
+    // Clear popup on input
+    form.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', () => {
+        if (input.classList.contains('invalid') && input.checkValidity()) {
+          input.classList.remove('invalid');
+          const pop = input.parentElement.querySelector('.error-message');
+          if (pop) pop.remove();
+        }
+      });
+    });
+  </script>
 </body>
+</html>
