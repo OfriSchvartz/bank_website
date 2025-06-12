@@ -40,14 +40,13 @@
 
     <div class="form-row">
       <label for="password" class="required">Password</label>
-      <input id="password" name="password" type="password" placeholder="8–16 characters"
-             required minlength="8" maxlength="16" title="8–16 characters">
+      <input id="password" name="password" type="password" placeholder="Enter Password" title="8–16 characters">
     </div>
 
     <div class="form-row">
       <label for="phone_number" class="required">Phone Number</label>
       <input id="phone_number" name="phone_number" type="tel" placeholder="+972541234567"
-             required pattern="^\+?\d{9,15}$" title="9–15 digits, may start with +">
+        title="Must start with +9725 followed by 8 digits">
     </div>
 
     <div class="form-row">
@@ -57,48 +56,11 @@
 
     <div class="form-row">
       <label for="zipcode" class="required">ZIP / Postal Code</label>
-      <input id="zipcode" name="zipcode" type="text" placeholder="12345"
-             required pattern="\d{5,10}" title="5–10 digits">
+      <input id="zipcode" name="zipcode" type="text" placeholder="12345">
     </div>
 
     <button type="submit" class="btn-primary">Register</button>
   </form>
 
-  <script>
-    const form = document.getElementById('registrationForm');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      // Remove existing error popups
-      form.querySelectorAll('.error-message').forEach(el => el.remove());
-
-      let valid = true;
-      form.querySelectorAll('input').forEach(input => {
-        if (!input.checkValidity()) {
-          valid = false;
-          const msg = input.validationMessage;
-          const popup = document.createElement('span');
-          popup.className = 'error-message';
-          popup.textContent = msg;
-          input.classList.add('invalid');
-          input.parentElement.append(popup);
-        } else {
-          input.classList.remove('invalid');
-        }
-      });
-
-      if (valid) form.submit();
-    });
-
-    // Clear popup on input
-    form.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', () => {
-        if (input.classList.contains('invalid') && input.checkValidity()) {
-          input.classList.remove('invalid');
-          const pop = input.parentElement.querySelector('.error-message');
-          if (pop) pop.remove();
-        }
-      });
-    });
-  </script>
 </body>
 </html>
