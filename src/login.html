@@ -1,97 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login</title>
-  <link rel="stylesheet" href="../style/styles.css">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <link rel="stylesheet" href="../style/styles.css">
+    <script>
+      import { validateForm } from '../js/validation.js';
+    </script>
 </head>
 <body>
   <form id="loginForm" class="form" novalidate autocomplete="off">
     <h1 class="form-title">Login</h1>
+      <div class="login-container">
+        <img class="logo" src="../images/bank.jpg" alt="Bank Logo" title="Bank Logo" id="logo">
+      </div>
 
     <div class="form-row">
       <label for="id" class="required">ID Number</label>
       <input
-        id="id"
-        name="id"
-        type="text"
-        placeholder="Enter your ID number"
-        required
-        pattern="\d{9}"
-        minlength="9"
-        maxlength="9"
-        title="Must be exactly 9 digits"
-      >
+        id="id" name="id" type="text" placeholder="Enter your ID number"  title="Fill out this field.">
     </div>
 
     <div class="form-row">
       <label for="password" class="required">Password</label>
       <input
-        id="password"
-        name="password"
-        type="password"
-        placeholder="Enter your password"
-        required
-        minlength="8"
-        maxlength="16"
-        title="1–8 characters"
-      >
+        id="password" name="password" type="password" placeholder="Enter your password" title="Fill out this field.">
     </div>
 
-    
     <div class="form-row form-checkbox">
         <input id="rememberMe" name="rememberMe" type="checkbox">
         <label for="rememberMe">Remember Me</label>
     </div>
 
-
-    <button type="submit" class="btn-primary">Login</button>
-
+    <button type="submit" onclick="validateForm()" class="btn-primary">Login</button>
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form submission
+        const validator = new FormValidator(this);
+        if (validator.validate()) {
+          // If validation passes, submit the form or perform login logic
+          alert('Login successful!');
+        }
+      });
+    </script>
     <p class="form-footer">
       Don’t have an account? <a href="register.html">Register here</a><br>
       Forgot your password? <a href="forgot_password.html">Reset Password</a>
     </p>
   </form>
 
-  <script>
-    const form = document.getElementById('loginForm');
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      // clear old messages
-      form.querySelectorAll('.error-message').forEach(el => el.remove());
-
-      let valid = true;
-      form.querySelectorAll('input[required]').forEach(input => {
-        if (!input.checkValidity()) {
-          valid = false;
-          const msg = input.validationMessage;
-          const popup = document.createElement('span');
-          popup.className = 'error-message';
-          popup.textContent = msg;
-          input.classList.add('invalid');
-          input.parentElement.append(popup);
-        } else {
-          input.classList.remove('invalid');
-        }
-      });
-
-      if (valid) {
-        form.submit();
-      }
-    });
-
-    // remove error when corrected
-    form.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', () => {
-        if (input.classList.contains('invalid') && input.checkValidity()) {
-          input.classList.remove('invalid');
-          const pop = input.parentElement.querySelector('.error-message');
-          if (pop) pop.remove();
-        }
-      });
-    });
-  </script>
+  
 </body>
 </html>
