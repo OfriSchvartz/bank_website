@@ -49,11 +49,13 @@
           else {
             isSpecial = true;
           }
+        }
           if (isUpper == false || isLower == false || isDigit == false || isSpecial == false) {
             alert("Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
             return false;
           }
-        }
+        window.location.href = "index.html";
+    
       }
     </script>
 </head>
@@ -81,7 +83,7 @@
         <label for="rememberMe">Remember Me</label>
     </div>
 
-    <button type="submit" onclick="validateLogin()" class="btn-primary">Login</button>
+    <button type="button" onclick="validateLogin()" class="btn-primary">Login</button>
     
     <p class="form-footer">
       Don’t have an account? <a href="register.html">Register here</a><br>
