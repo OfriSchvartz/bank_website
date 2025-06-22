@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Registration</title>
+  <link rel="stylesheet" href="../static/styles.css">
+  <script>
+
+    function validateRegistration(event) {
+      // Prevent form submission initially
+      event.preventDefault();
+      
+      const id = document.getElementById("id").value;
+      const firstname = document.getElementById("firstname").value;
+      const lastname = document.getElementById("lastname").value;
+      const dateOfBirth = document.getElementById("date_of_birth").value;
+      const gender = document.getElementById("gender").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm_password").value;
+      const phoneNumber = document.getElementById("phone_number").value;
+      const address = document.getElementById("address").value;
+      const zipcode = document.getElementById("zipcode").value;
+      
+      // ID validation
+      if (id == "") {
+        alert("You must enter your ID number");
+        return false;
+      }
+
+      let isDigit = false;
+      for (let i = 0; i < id.length; i++) {
+        if (id[i] >= '0' && id[i] <= '9') {
+          isDigit = true;
+        } else {
+          // If any character is not a digit, ID is invalid
+          alert("ID number must contain only digits and be at least 5 characters long");
+          return false;
+        }
+      }
+      if (id.length < 5) {
+        alert("ID number must contain only digits and be at least 5 characters long");
+        return false;
+      }
+
+      // Name validations
+      if (firstname == "") {
+        alert("You must enter your first name");
+        return false;
+      }
+      if (lastname == "") {
+        alert("You must enter your last name");
+        return false;
+      }
+
+      // Date of birth validation
+      if (dateOfBirth == "") {
+        alert("You must enter your date of birth");
+        return false;
+      }
+
+      const today = new Date();
+      if (new Date(dateOfBirth) >= today) {
+        alert("Date of birth must be in the past");
+        return false;
+      }
+      
+      // Gender validation
+      if (gender === "") {
+        alert("You must select your gender");
+        return false;
+      }
+
+      // Email validation
+      if (email == "") {
+        alert("You must enter your email");
+        return false;
+      }
+      
+      const start_index = email.indexOf("@");
+      const end_index = email.indexOf(".", start_index); // Fixed: indexOf instead of IndexOf
+      
+      if (start_index == -1 || end_index == -1 || end_index <= start_index + 1) {
+        alert("You must enter a valid email address");
+        return false;
+      }
+      
+      // Password validation
+      if (password == "") {
+        alert("You must enter a password");
+        return false;
+      }
+
+      if (password.length < 8 || password.length > 16) {
+        alert("Password must be between 8 and 16 characters long");
+        return false;
+      }
+
+      let isUpper = false;
+      let isLower = false;
+      let isPasswordDigit = false; // Renamed to avoid conflict
+      let isSpecial = false;  
+
+      for(let i = 0; i < password.length; i++) {
+        if(password[i] >= 'A' && password[i] <= 'Z') {
+          isUpper = true;
+        } 
+        else if(password[i] >= 'a' && password[i] <= 'z') {
+          isLower = true;
+        } 
+        else if(password[i] >= '0' && password[i] <= '9') {
+          isPasswordDigit = true;
+        } 
+        else {
+          isSpecial = true;
+        }
+      }
+      
+      if (!isUpper || !isLower || !isPasswordDigit || !isSpecial) {
+        alert("Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+        return false;
+      }
+
+      // Confirm password validation
+      if (confirmPassword == "") {
+        alert("You must confirm your password");
+        return false;
+      }
+      if (confirmPassword !== password) {
+        alert("Passwords do not match");
+        return false;
+      }
+
+      // Phone number validation
+      if (phoneNumber == "") {
+        alert("You must enter your phone number");
+        return false;
+      }
+      if (!phoneNumber.startsWith("05") || phoneNumber.length != 10) { // Fixed: OR instead of AND
+        alert("Phone number must start with 05 and be 10 characters long");
+        return false;
+      }
+
+      // Address validation
+      if (address == "") {
+        alert("You must enter your address");
+        return false;
+      }
+
+      // Zipcode validation
+      if (zipcode == "") {
+        alert("You must enter your ZIP / Postal code");
+        return false;
+      }
+      if (zipcode.length < 5 || zipcode.length > 10) {
+        alert("ZIP / Postal code must be between 5 and 10 characters long");
+        return false;
+      }
+     
+      // If all validations pass, redirect
+      window.location.href = "../templates/login.html";
+      return true;
+    }
+  </script>
+
+</head>
+<body>
+  <form id="registrationForm" onsubmit="validateRegistration(event)" class="form" novalidate autocomplete="off">
+    <h1 class="form-title">User Registration</h1>
+
+    <div class="form-row">
+      <label for="id" class="required">ID Number</label>
+      <input id="id" name="id" type="text" placeholder="Enter your ID number">
+    </div>
+
+    <div class="form-row">
+      <label for="firstname" class="required">First Name</label>
+      <input id="firstname" name="firstname" type="text" placeholder="Enter your first name">
+    </div>
+
+    <div class="form-row">
+      <label for="lastname" class="required">Last Name</label>
+      <input id="lastname" name="lastname" type="text" placeholder="Enter your last name">
+    </div>
+
+    <div class="form-row">
+      <label for="date_of_birth" class="required">Date of Birth</label>
+      <input id="date_of_birth" name="date_of_birth" type="date">
+    </div>
+
+    <div class="form-row">
+      <label for="gender" class="required">Gender</label>
+      <select id="gender" name="gender">
+        <option value="" disabled selected>Select gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="email" class="required">Email</label>
+      <input id="email" name="email" type="email" placeholder="you@example.com">
+    </div>
+
+    <div class="form-row">
+      <label for="password" class="required">Password</label>
+      <input id="password" name="password" type="password" placeholder="Enter Password" title="8–16 characters">
+    </div>
+
+    <div class="form-row">
+      <label for="confirm_password" class="required">Confirm Password</label>
+      <input id="confirm_password" name="confirm_password" type="password" placeholder="Re-enter Password" title="8–16 characters">
+    </div>
+
+    <div class="form-row">
+      <label for="phone_number" class="required">Phone Number</label>
+      <input id="phone_number" name="phone_number" type="tel" placeholder="Must start with 05"
+        title="Must start with 05 followed by 8 digits">
+    </div>
+
+    <div class="form-row">
+      <label for="address" class="required">Address</label>
+      <input id="address" name="address" type="text" placeholder="Street, City">
+    </div>
+
+    <div class="form-row">
+      <label for="zipcode" class="required">ZIP / Postal Code</label>
+      <input id="zipcode" name="zipcode" type="text" placeholder="12345">
+    </div>
+
+    <button type="submit" class="btn-primary">Register</button>
+  </form>
+</body>
+</html>
