@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Account</title>
+  <link rel="stylesheet" href="../static/styles.css">
+  <link rel="stylesheet" href="../static/account.css">
+</head>
+<body>
+  <div class="account-container" id="mainAccountContainer">
+    <div class="account-header" id="accountHeader">
+      <h1 id="welcomeMessage">Welcome Back, John Doe</h1>
+      <p id="accountNumber">Account Number: 1234567890</p>
+    </div>
+
+    <div class="balance-section" id="balanceSection">
+      <div class="balance-label" id="balanceLabel">Current Balance</div>
+      <div class="balance-amount" id="balanceAmount">₪15,247.83</div>
+      <div class="balance-updated" id="balanceUpdated">Last updated: June 22, 2025</div>
+    </div>
+
+    <div class="actions-section" id="actionsSection">
+      <button type="button" class="action-btn btn-withdraw" id="withdrawBtn" onclick="withdrawMoney()">
+        Withdraw Money
+      </button>
+      <button type="button" class="action-btn btn-transfer" id="transferBtn" onclick="transferMoney()">
+        Transfer Money
+      </button>
+    </div>
+
+    <div class="transactions-section" id="transactionsSection">
+      <h2 class="section-title" id="transactionsTitle">Recent Transactions</h2>
+      <table class="transactions-table" id="transactionsTable">
+        <thead id="transactionsTableHead">
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="transactionsTableBody">
+          <tr class="transaction-row" id="transaction1">
+            <td class="transaction-date">2025-06-22</td>
+            <td class="transaction-description">Salary Deposit</td>
+            <td class="transaction-type">Deposit</td>
+            <td class="transaction-amount amount-positive">+₪8,500.00</td>
+            <td class="transaction-balance">₪15,247.83</td>
+          </tr>
+          <tr class="transaction-row" id="transaction2">
+            <td class="transaction-date">2025-06-21</td>
+            <td class="transaction-description">ATM Withdrawal</td>
+            <td class="transaction-type">Withdrawal</td>
+            <td class="transaction-amount amount-negative">-₪500.00</td>
+            <td class="transaction-balance">₪6,747.83</td>
+          </tr>
+          <tr class="transaction-row" id="transaction3">
+            <td class="transaction-date">2025-06-20</td>
+            <td class="transaction-description">Transfer to Sarah Cohen</td>
+            <td class="transaction-type">Transfer</td>
+            <td class="transaction-amount amount-negative">-₪1,200.00</td>
+            <td class="transaction-balance">₪7,247.83</td>
+          </tr>
+          <tr class="transaction-row" id="transaction4">
+            <td class="transaction-date">2025-06-19</td>
+            <td class="transaction-description">Online Purchase - Amazon</td>
+            <td class="transaction-type">Purchase</td>
+            <td class="transaction-amount amount-negative">-₪89.90</td>
+            <td class="transaction-balance">₪8,447.83</td>
+          </tr>
+          <tr class="transaction-row" id="transaction5">
+            <td class="transaction-date">2025-06-18</td>
+            <td class="transaction-description">Electricity Bill Payment</td>
+            <td class="transaction-type">Bill Payment</td>
+            <td class="transaction-amount amount-negative">-₪312.45</td>
+            <td class="transaction-balance">₪8,537.73</td>
+          </tr>
+          <tr class="transaction-row" id="transaction6">
+            <td class="transaction-date">2025-06-17</td>
+            <td class="transaction-description">Refund - Store Return</td>
+            <td class="transaction-type">Refund</td>
+            <td class="transaction-amount amount-positive">+₪156.78</td>
+            <td class="transaction-balance">₪8,850.18</td>
+          </tr>
+          <tr class="transaction-row" id="transaction7">
+            <td class="transaction-date">2025-06-16</td>
+            <td class="transaction-description">Gas Station</td>
+            <td class="transaction-type">Purchase</td>
+            <td class="transaction-amount amount-negative">-₪280.00</td>
+            <td class="transaction-balance">₪8,693.40</td>
+          </tr>
+          <tr class="transaction-row" id="transaction8">
+            <td class="transaction-date">2025-06-15</td>
+            <td class="transaction-description">Transfer from David Levi</td>
+            <td class="transaction-type">Transfer</td>
+            <td class="transaction-amount amount-positive">+₪750.00</td>
+            <td class="transaction-balance">₪8,973.40</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Placeholder functions for buttons - no logic yet
+    function withdrawMoney() {
+      alert("Withdraw Money functionality will be implemented later");
+    }
+
+    function transferMoney() {
+      alert("Transfer Money functionality will be implemented later");
+    }
+  </script>
+</body>
+</html>

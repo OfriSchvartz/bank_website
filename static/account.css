@@ -1,0 +1,197 @@
+/* account.css - Account page specific styles */
+
+/* Main container */
+.account-container {
+  background: #e3f4ec;
+  padding: 2rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Header section */
+.account-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #7eb5bd;
+}
+
+#welcomeMessage {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  color: #2c5530;
+}
+
+#accountNumber {
+  margin: 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Balance section */
+.balance-section {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.balance-label {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.balance-amount {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2c5530;
+  margin: 0.5rem 0;
+}
+
+.balance-updated {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Actions section */
+.actions-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.action-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 150px;
+}
+
+.btn-withdraw {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-withdraw:hover {
+  background: #c82333;
+}
+
+.btn-transfer {
+  background: #7eb5bd;
+  color: white;
+}
+
+.btn-transfer:hover {
+  background: #005fcc;
+}
+
+/* Transactions section */
+.transactions-section {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #2c5530;
+  text-align: center;
+}
+
+/* Transactions table */
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.transactions-table th,
+.transactions-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.transactions-table th {
+  background: #f8f9fa;
+  font-weight: bold;
+  color: #2c5530;
+}
+
+.transaction-row:hover {
+  background: #f8f9fa;
+}
+
+/* Transaction cell classes */
+.transaction-date {
+  font-weight: 500;
+}
+
+.transaction-description {
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+.transaction-type {
+  font-weight: 600;
+}
+
+.transaction-amount {
+  font-weight: bold;
+  text-align: right;
+}
+
+.transaction-balance {
+  text-align: right;
+  font-weight: 500;
+}
+
+/* Amount styling */
+.amount-positive {
+  color: #28a745;
+}
+
+.amount-negative {
+  color: #dc3545;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .actions-section {
+    flex-direction: column;
+  }
+  
+  .transactions-table {
+    font-size: 0.9rem;
+  }
+  
+  .balance-amount {
+    font-size: 2rem;
+  }
+  
+  #welcomeMessage {
+    font-size: 1.5rem;
+  }
+  
+  .account-container {
+    padding: 1rem;
+  }
+  
+  .action-btn {
+    min-width: auto;
+    width: 100%;
+  }
+}
