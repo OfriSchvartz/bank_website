@@ -54,6 +54,8 @@
             alert("Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
             return false;
           }
+
+        localStorage.setItem("account_number", id);
         window.location.href = "account_page.html";
       }
     </script>
