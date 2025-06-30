@@ -138,11 +138,7 @@
       addRow('ATM Withdrawal', 'Withdrawal', -amt);
     }
     function transferMoney() {
-      const current = parseFloat(document.getElementById('balanceAmount').textContent.replace(/[^0-9.-]/g, ''));
-      const recipient = prompt('Recipient:');
-      const amt = parseFloat(prompt('Amount to transfer:'));
-      if (!recipient || isNaN(amt) || amt <= 0 || amt > current) return;
-      addRow(`Transfer to ${recipient}`, 'Transfer', -amt);
+      window.location.href = 'transfer_page.html'; // Redirect to transfer page
     }
     function depositMoney() {
       const input = prompt('Enter amount to deposit:');
