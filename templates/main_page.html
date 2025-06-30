@@ -16,7 +16,7 @@
 
     <div class="balance-section" id="balanceSection">
       <div class="balance-label" id="balanceLabel">Current Balance</div>
-      <div class="balance-amount" id="balanceAmount">₪15,247.83</div>
+      <div class="balance-amount">₪<span id="balanceAmount">15,247.83</span></div>
       <div class="balance-updated" id="balanceUpdated">Last updated: June 22, 2025</div>
     </div>
 
@@ -102,12 +102,40 @@
       </table>
     </div>
   </div>
-
   <script>
-    // Placeholder functions for buttons - no logic yet
     function withdrawMoney() {
-      alert("Withdraw Money functionality will be implemented later");
-    }
+        const balanceElem = document.getElementById("balanceAmount");
+         let balance = parseFloat(balanceElem.textContent.replace(/,/g, "")
+        );
+        const input = prompt("Enter the amount to withdraw:");
+        if (input === null || input.trim() === "") {
+        alert("Withdrawal cancelled.");
+        return;
+        }
+        const amount = parseFloat(input);
+        if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid amount to withdraw.");
+        return;
+        }
+        if (amount > balance) {
+        alert("Insufficient balance for this withdrawal.");
+        return;
+        }
+        balance -= amount;
+        balanceElem.textContent = balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        alert(`Withdrawal successful! New balance: ₪${balance.toFixed(2)}`);  
+        const tbody = document.getElementById("transactionsTableBody");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+        <td class="transaction-date">${new Date().toISOString().slice(0,10)}</td>
+        <td class="transaction-description">ATM Withdrawal</td>
+        <td class="transaction-type">Withdrawal</td>
+        <td class="transaction-amount amount-negative">-₪${amount.toFixed(2)}</td>
+        <td class="transaction-balance">₪${balance.toFixed(2)}</td>
+        `;
+        tr.className = "transaction-row";
+        tbody.prepend(tr);
+        }
 
     function transferMoney() {
       alert("Transfer Money functionality will be implemented later");
