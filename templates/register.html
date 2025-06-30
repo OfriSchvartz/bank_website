@@ -157,10 +157,12 @@
         alert("ZIP / Postal code must be between 5 and 10 characters long");
         return false;
       }
-     
+     localStorage.setItem("account_number", id);
+
       // If all validations pass, redirect
       window.location.href = "../templates/login.html";
       return true;
+
     }
   </script>
 

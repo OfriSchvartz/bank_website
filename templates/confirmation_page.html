@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transfer Confirmation</title>
+  <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+  <div class="form confirmation-card">
+    <h1 class="form-title">Transfer Successful</h1>
+
+    <div class="form-row">
+      <label>Recipient:</label>
+      <p id="conf-recipient">{{recipientName}}</p>
+    </div>
+
+    <div class="form-row">
+      <label>Account #:</label>
+      <p id="conf-account">{{accountNumber}}</p>
+    </div>
+
+    <div class="form-row">
+      <label>Amount:</label>
+      <p id="conf-amount">₪{{amount}}</p>
+    </div>
+
+    <div class="form-row">
+      <label>Description:</label>
+      <p id="conf-description">{{description || '—'}}</p>
+    </div>
+
+    <div class="form-row">
+      <label>Date & Time:</label>
+      <p id="conf-datetime">{{dateTime}}</p>
+    </div>
+
+    <div id="redirectOverlay" class="redirect-overlay">
+    <div class="redirect-alert">Redirecting to Account Page...</div>
+  </div>
+
+
+    <div class="form-actions">
+      <button onclick="window.location='account_page.html'" class="btn-primary">Back to Account</button>
+      <button onclick="window.location='transfer_page.html'" class="btn-secondary">New Transfer</button>
+    </div>
+  </div>
+
+  <script>
+    // Populate confirmation details from sessionStorage or server-rendered variables
+    document.getElementById('conf-recipient').textContent = sessionStorage.getItem('recipient');
+    document.getElementById('conf-account').textContent = sessionStorage.getItem('accountNumber');
+    document.getElementById('conf-amount').textContent = '₪' + sessionStorage.getItem('amount');
+    const desc = sessionStorage.getItem('description');
+    document.getElementById('conf-description').textContent = desc ? desc : '—';
+    document.getElementById('conf-datetime').textContent = new Date().toLocaleString();
+    // Redirect back to account page after 5 seconds
+    setTimeout(
+        function(){
+      window.location.href = 'account_page.html';
+    }, 5000)
+
+
+
+    
+  </script>
+</body>
+</html>
