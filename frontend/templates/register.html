@@ -189,9 +189,10 @@
             "address": address,
             "zipcode": zipcode
           })
-          }
-        ).then(res => res.json()).then(data => {
-          if (data.status == false) {
+        }
+      ).then(res => res.json()).then(data => {
+          if (data.status == false) 
+          {
             alert(data.text);
             return false; 
           } 
@@ -201,7 +202,6 @@
           }
         })
       }
-    
     async function SubmitRegister()
     {
       result = validateRegistration();
@@ -217,7 +217,6 @@
         window.location.href = "/page/account"
     }
   </script>
-
 </head>
 <body>
   <form id="registrationForm" onsubmit="SubmitRegister()" class="form" novalidate autocomplete="off">

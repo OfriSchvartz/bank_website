@@ -1,5 +1,7 @@
 from flask import Flask ,render_template , send_from_directory, abort , request
-import os , json
+import os 
+import json
+from datetime import datetime
 
 frontend_path = os.path.abspath('../frontend')
 app = Flask(__name__, template_folder=frontend_path)
@@ -14,7 +16,8 @@ users = {
         "password" : "Aa!23!23",
         "phone" : "0526367408",
         "address": "Shaked 5, Magal",
-        "zip" : "2244508"
+        "zip" : "2244508",
+        "balance" : 5000
         },
     "206978083": {
         "first_name" : "John",
@@ -25,8 +28,12 @@ users = {
         "password" : "Ss!23123",
         "phone" : "0557958234",
         "address": "123 Main St, Springfield",
-        "zip" : "1234567"
+        "zip" : "1234567",
+        "balance" : 5000
     },
+}
+transactions = {
+
 }
 @app.route('/page/<path:page_name>')
 def get_page_name(page_name):
@@ -105,10 +112,35 @@ def register_user():
             "password": password,
             "phone_number": phone_number,
             "address": address,
-            "zipcode": zipcode
+            "zipcode": zipcode,
+            "balance": 5000
         }
         response["text"] = "User registered successfully"
     return json.dumps(response)
+
+@app.route('/api/withdraw', methods=['POST'])
+def handle_withdraw():
+    global users
+    data = request.json
+
+    id = data.get("id")
+    amount = data.get("amount")
+    description = data.get("description")
+    response = {
+        "status": False,
+        "text": ""
+    }
+    if id not in users:
+        response["text"] = "ID isn't registered"
+    elif users[id]["balance"] < amount:
+        response["text"] = f"Insufficient balance: you have only {users[id]['balance']} in your account"
+    else:
+        new_transaction = {
+            "type": "withdraw",
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+
+        }
+
 
 app.run(debug=True)
 
