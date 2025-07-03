@@ -34,7 +34,7 @@
 
     <div class="form-actions">
       <p class="form-footer">
-        <a href="account_page.html">← Back to Account</a>
+        <a href="/page/account">← Back to Account</a>
       </p>
     </div>
   </form>
@@ -61,8 +61,8 @@
             alert("Please enter a valid amount.");
             return false;
         }
-
         return true;
+       
     }
 
     document.getElementById('transferForm').addEventListener('submit', function(e) {
@@ -80,7 +80,7 @@
       sessionStorage.setItem('amount', amount);
       sessionStorage.setItem('description', description);
 
-      window.location.href = 'confirmation_page.html';
+      window.location.href = '/page/confirmation';
     });
   </script>
 </body>

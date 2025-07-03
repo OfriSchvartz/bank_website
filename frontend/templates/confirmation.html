@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Transfer Confirmation</title>
   <link rel="stylesheet" href="../static/styles.css">
+  <link rel="stylesheet" href="../static/account.css">
 </head>
 <body>
   <div class="form confirmation-card">
@@ -27,7 +28,7 @@
 
     <div class="form-row">
       <label>Description:</label>
-      <p id="conf-description">{{description || '—'}}</p>
+      <p id="conf-description">{{description or '—'}}</p>
     </div>
 
     <div class="form-row">
@@ -39,10 +40,9 @@
     <div class="redirect-alert">Redirecting to Account Page...</div>
   </div>
 
-
     <div class="form-actions">
-      <button onclick="window.location='account_page.html'" class="btn-primary">Back to Account</button>
-      <button onclick="window.location='transfer_page.html'" class="btn-secondary">New Transfer</button>
+      <button onclick="window.location='/page/account'" class="btn-primary">Back to Account</button>
+      <button onclick="window.location='/page/transfer'" class="btn-secondary">New Transfer</button>
     </div>
   </div>
 
@@ -54,15 +54,12 @@
     const desc = sessionStorage.getItem('description');
     document.getElementById('conf-description').textContent = desc ? desc : '—';
     document.getElementById('conf-datetime').textContent = new Date().toLocaleString();
-    // Redirect back to account page after 5 seconds
+    // Redirect back to account page after 3 seconds
     setTimeout(
         function(){
-      window.location.href = 'account_page.html';
-    }, 5000)
+      window.location.href = "/page/account";
+    }, 3000);
 
-
-
-    
   </script>
 </body>
 </html>

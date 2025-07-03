@@ -6,11 +6,9 @@
   <title>User Registration</title>
   <link rel="stylesheet" href="../static/styles.css">
   <script>
+    function validateRegistration() 
+    {
 
-    function validateRegistration(event) {
-      // Prevent form submission initially
-      event.preventDefault();
-      
       const id = document.getElementById("id").value;
       const firstname = document.getElementById("firstname").value;
       const lastname = document.getElementById("lastname").value;
@@ -158,17 +156,71 @@
         return false;
       }
      localStorage.setItem("account_number", id);
-
-      // If all validations pass, redirect
-      window.location.href = "../templates/login.html";
       return true;
+    }
+    async function SaveRegisterInfo() 
+    {
+      const id = document.getElementById("id").value;
+      const firstname = document.getElementById("firstname").value;
+      const lastname = document.getElementById("lastname").value;
+      const dateOfBirth = document.getElementById("date_of_birth").value;
+      const gender = document.getElementById("gender").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const phoneNumber = document.getElementById("phone_number").value;
+      const address = document.getElementById("address").value;
+      const zipcode = document.getElementById("zipcode").value;
 
+      return fetch("http://127.0.0.1:5000/api/register", 
+        {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "id": id,
+            "firstname": firstname,
+            "lastname": lastname,
+            "date_of_birth": dateOfBirth,
+            "gender": gender,
+            "email": email,
+            "password": password,
+            "phone_number": phoneNumber,
+            "address": address,
+            "zipcode": zipcode
+          })
+          }
+        ).then(res => res.json()).then(data => {
+          if (data.status == false) {
+            alert(data.text);
+            return false; 
+          } 
+          else 
+          {
+            return true; 
+          }
+        })
+      }
+    
+    async function SubmitRegister()
+    {
+      result = validateRegistration();
+      if (result == false){
+        return false;
+      }
+
+      result = await SaveRegisterInfo();
+      if (result == false){
+        return false;
+      }
+      else 
+        window.location.href = "/page/account"
     }
   </script>
 
 </head>
 <body>
-  <form id="registrationForm" onsubmit="validateRegistration(event)" class="form" novalidate autocomplete="off">
+  <form id="registrationForm" onsubmit="SubmitRegister()" class="form" novalidate autocomplete="off">
     <h1 class="form-title">User Registration</h1>
 
     <div class="form-row">
@@ -232,7 +284,9 @@
       <input id="zipcode" name="zipcode" type="text" placeholder="12345">
     </div>
 
-    <button type="submit" class="btn-primary">Register</button>
+    <button type="submit"  class="btn-primary">Register</button>
+    <a href="/page/login" class="btn-secondary">Already have an account? Login</a>
+  </div>
   </form>
 </body>
 </html>
