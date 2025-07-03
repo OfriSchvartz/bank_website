@@ -6,7 +6,8 @@
     <title>Login</title>
     <link rel="stylesheet" href="../static/styles.css">
     <script>
-      function validateLogin(){
+      function validateLogin()
+      {
       const id = document.getElementById("id").value;
       const password = document.getElementById("password").value;
       if(id == "")
@@ -56,11 +57,51 @@
           }
 
         localStorage.setItem("account_number", id);
-
-        href = "/login?account_number=" + id + "&password=" + password;
-        
         return true;
       }
+      async function checkLoginInfo()
+      {
+        const id = document.getElementById("id").value;
+        const password = document.getElementById("password").value;
+        return fetch("http://127.0.0.1:5000/api/login", 
+          {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              "id": id,
+              "password": password
+            })
+          }
+        ).then(res => res.json()).then(data => {
+          if (data.status == false) {
+            alert(data.text);
+            return false; 
+          } 
+          else 
+          {
+            return true; 
+          }
+        })
+      }
+
+      async function submitLogin() 
+      {
+        
+        result = validateLogin();
+        if (result == false) {
+          return false;
+        }
+        result = await checkLoginInfo();
+        if (result == false) {
+          return false;
+        }
+        else {
+          alert("Login successful");  
+          window.location.href = "/page/account";
+        }
+    }
     </script>
 </head>
 <body>
@@ -87,7 +128,7 @@
         <label for="rememberMe">Remember Me</label>
     </div>
 
-    <button type="button" onclick="validateLogin()" class="btn-primary">Login</button>
+    <button type="button" onclick="submitLogin()" class="btn-primary">Login</button>
     
     <p class="form-footer">
       Don’t have an account? <a href="/page/register">Register here</a><br>

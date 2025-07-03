@@ -1,5 +1,5 @@
-from flask import Flask ,render_template , send_from_directory, abort
-import os
+from flask import Flask ,render_template , send_from_directory, abort , request
+import os , json
 
 frontend_path = os.path.abspath('../frontend')
 app = Flask(__name__, template_folder=frontend_path)
@@ -11,11 +11,22 @@ users = {
         "date_of_birth" : "06/06/1999",
         "gender": "Male",
         "email": "ofrischvartz@gmail.com",
-        "password" :  "Aa!23!23",
+        "password" : "Aa!23!23",
         "phone" : "0526367408",
         "address": "Shaked 5, Magal",
         "zip" : "2244508"
-}
+        },
+    "206978083": {
+        "first_name" : "John",
+        "last_name" : "Doe",
+        "date_of_birth" : "01/01/1990",
+        "gender" : "Male",
+        "email" : "JohnDoe@gmail.com",
+        "password" : "Ss!23123",
+        "phone" : "0557958234",
+        "address": "123 Main St, Springfield",
+        "zip" : "1234567"
+    },
 }
 @app.route('/page/<path:page_name>')
 def get_page_name(page_name):
@@ -40,15 +51,64 @@ def account_styles():
 def get_bank_image():
     return send_from_directory(f'{frontend_path}/images', 'bank.jpg')
 
-@app.route('/login')
-def is_valid_user(user_id, user_password):
+@app.route('/api/login', methods=['POST'])
+def is_valid_user():
     global users
-    if user_id not in users:
-        return False
-    if users[user_id]["password"] != user_password:
-        return False
-    return True
 
+    data = request.json
+    id = data.get("id")
+    password = data.get("password")
+
+    response = {
+        "status": False,
+        "text": ""
+    }
+    if id not in users:
+        response["text"] = "ID isn't registerd"
+    elif users[id]["password"] != password:
+        response["text"] = "Password is incorrect"
+    else:
+        response["status"] = True
+        response["text"] = "Valid User"
+    return json.dumps(response)
+
+@app.route('/api/register', methods=['POST'])
+def register_user():
+    global users
+
+    data = request.json
+    id = data.get("id")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
+    date_of_birth = data.get("date_of_birth")
+    gender = data.get("gender")
+    email = data.get("email")
+    password = data.get("password")
+    phone_number = data.get("phone_number")
+    address = data.get("address")
+    zipcode = data.get("zipcode")
+
+    response = {
+        "status": False,
+        "text": ""
+    }
+    if id in users:
+        response["text"] = "ID already exists"
+    else:
+        users[id] = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "date_of_birth": date_of_birth,
+            "gender": gender,
+            "email": email,
+            "password": password,
+            "phone_number": phone_number,
+            "address": address,
+            "zipcode": zipcode
+        }
+        response["status"] = True
+        response["text"] = "User registered successfully"
+    return json.dumps(response)
 
 app.run(debug=True)
 
