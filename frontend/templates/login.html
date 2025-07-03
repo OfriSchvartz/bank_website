@@ -56,7 +56,10 @@
           }
 
         localStorage.setItem("account_number", id);
-        window.location.href = "account_page.html";
+
+        href = "/login?account_number=" + id + "&password=" + password;
+        
+        return true;
       }
     </script>
 </head>
@@ -87,8 +90,8 @@
     <button type="button" onclick="validateLogin()" class="btn-primary">Login</button>
     
     <p class="form-footer">
-      Don’t have an account? <a href="register.html">Register here</a><br>
-      Forgot your password? <a href="forgot_password.html">Reset Password</a>
+      Don’t have an account? <a href="/page/register">Register here</a><br>
+      Forgot your password? <a href="/page/recover">Reset Password</a>
     </p>
   </form>
 
