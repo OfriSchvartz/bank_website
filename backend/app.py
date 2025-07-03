@@ -95,6 +95,7 @@ def register_user():
     if id in users:
         response["text"] = "ID already exists"
     else:
+        response["status"] = True
         users[id] = {
             "first_name": first_name,
             "last_name": last_name,
@@ -106,7 +107,6 @@ def register_user():
             "address": address,
             "zipcode": zipcode
         }
-        response["status"] = True
         response["text"] = "User registered successfully"
     return json.dumps(response)
 
