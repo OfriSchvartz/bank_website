@@ -212,9 +212,9 @@ def handle_transfer():
         "text": ""
     }
 
-    if from_id or to_id not in users:
+    if from_id not in users or to_id not in users:
         response["text"] = "ID's isn't registered"
-    elif f'{users[to_id]["first_name"]}{users[to_id]["last_name"]}' != recipient_name:
+    elif f'{users[to_id]["first_name"]} {users[to_id]["last_name"]}' != recipient_name:
         response["text"] = "The person name isn't found."
     elif from_id == to_id:
         response["text"] = "You can't transfer to yourself"
@@ -222,13 +222,13 @@ def handle_transfer():
         response["text"] = f"Insufficient balance: you have only {users[from_id]['balance']} in your account"
     else:
         from_transaction = {
-            "type": "From Transaction",
+            "type": "Transfer",
             "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "description": description,
             "amount": amount
         }
         to_transaction = {
-            "type": "To Transaction",
+            "type": "Transfer",
             "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "description": description,
             "amount": amount
