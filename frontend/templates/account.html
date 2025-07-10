@@ -7,61 +7,59 @@
   <link rel="stylesheet" href="../static/styles.css">
   <link rel="stylesheet" href="../static/account.css">
    <script>
-    // Helpers
+    
     function fmt(num) {
-      return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     }
     function fmtDateTime(date) {
-      const pad = n => n.toString().padStart(2, '0');
-      return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ` +
-             `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+      const options = {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      };
+      return new Intl.DateTimeFormat('en-US', options).format(date);
     }
-    // Parse date text to Date object
-    function parseDate(text) {
-      // text in 'YYYY-MM-DD HH:mm:ss'
-      const [d, t] = text.split(' ');
-      return new Date(d + 'T' + t);
+    function showTranscations(transactions) 
+    {
+      document.getElementById("transactionsBody").innerHTML = ""; // Clear previous transactions
+      if (transactions.length == 0) {
+        document.getElementById("transactionsBody").innerHTML = "<tr><td colspan='5'>No transactions found.</td></tr>";
+        return;
+      }
+      for (let i = transactions.length - 1; i >= 0; i--) 
+      {
+       let new_line = "<tr><td>" + transactions[i].date +"</td><td>" + transactions[i].description + "</td><td>" + '₪' + transactions[i].amount + "</td><td>" + transactions[i].type + "</td></tr>";
+       document.getElementById("transactionsBody").innerHTML += new_line;
+      }
+      
     }
-
-    // Update top balance display
-    function updateGlobalBalance(balance) {
-      document.getElementById('balanceAmount').textContent = fmt(balance);
-      document.getElementById('balanceUpdated').textContent = fmtDateTime(new Date());
-    }
-
-    // Recalculate running balances and sort rows
-    function recalcBalances() {
-      const tbody = document.getElementById('transactionsTableBody');
-      const rows = Array.from(tbody.querySelectorAll('tr.transaction-row'));
-
-      // Sort rows by date ascending (oldest → newest)
-      const asc = rows.slice().sort((a, b) => parseDate(a.querySelector('.transaction-date').textContent) - parseDate(b.querySelector('.transaction-date').textContent));
-
-      // Compute running balance
-      let balance = 0;
-      asc.forEach((row, i) => {
-        const balCell = row.querySelector('.transaction-balance');
-        if (row.id === 'openingBalanceRow') {
-          balance = parseFloat(balCell.textContent.replace(/[^0-9.-]/g, ''));
-        } else {
-          const amtText = row.querySelector('.transaction-amount').textContent.replace(/[^0-9.-]/g, '');
-          const amt = parseFloat(amtText) || 0;
-          balance += amt;
-          balCell.textContent = '₪' + fmt(balance);
+    async function updateUserData() 
+    {
+      return fetch("http://127.0.0.1:5000/api/get_user_data", 
+          {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              "id": localStorage.getItem("account_number")
+            })
+          }
+        ).then(res => res.json()).then(data => {
+          if (data.status == false) {
+            alert(data.text);
+            return false; 
+          } 
+          else 
+          {
+            document.getElementById("balanceAmount").innerText = data.balance;
+            showTranscations(data.transactions);
+            return true; 
+          }
         }
-      });
-
-      // Update global top
-      updateGlobalBalance(balance);
-
-      // Reorder DOM to descending (newest on top)
-      const desc = asc.slice().reverse();
-      tbody.innerHTML = '';
-      desc.forEach(r => tbody.appendChild(r));
+      )
     }
-
-    // Add a new transaction row
-    function addRow(desc, type, amount) {
+    function addRow(desc, type, amount, balance) {
       const now = new Date();
       const tr = document.createElement('tr');
       tr.className = 'transaction-row';
@@ -70,18 +68,41 @@
         <td class="transaction-description">${desc}</td>
         <td class="transaction-type">${type}</td>
         <td class="transaction-amount ${amount >= 0 ? 'amount-positive' : 'amount-negative'}">${amount >= 0 ? '+' : '-'}₪${fmt(Math.abs(amount))}</td>
-        <td class="transaction-balance"></td>
+        <td class="transaction-balance">${balance}</td>
       `;
       document.getElementById('transactionsTableBody').appendChild(tr);
-      recalcBalances();
     }
 
-    function withdrawMoney() {
-      const current = parseFloat(document.getElementById('balanceAmount').textContent.replace(/[^0-9.-]/g, ''));
-      const input = prompt('Enter amount to withdraw:');
-      const amt = parseFloat(input);
-      if (isNaN(amt) || amt <= 0 || amt > current) return;
-      addRow('ATM Withdrawal', 'Withdrawal', -amt);
+    function withdrawMoney() 
+    {
+      amount = parseFloat(prompt('Enter amount to withdraw:'));
+      description = prompt('Enter description:');
+
+      return fetch("http://127.0.0.1:5000/api/withdraw", 
+          {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              "id": localStorage.getItem("account_number"),
+              "amount": amount,
+              "description": description
+            })
+          }
+        ).then(res => res.json()).then(data => {
+          if (data.status == false) {
+            alert(data.text);
+            return false; 
+          } 
+          else 
+          {
+            alert("Withdrawal successful!");
+            document.getElementById("balanceAmount").innerText = data.balance;
+            showTranscations(data.transactions);
+            return true; 
+          }
+        })
     }
     function transferMoney() {
       window.location.href = '/page/transfer'; // Redirect to transfer page
@@ -92,11 +113,13 @@
       if (isNaN(amt) || amt <= 0) return;
       addRow('Deposit', 'Deposit', amt);
     }
-    window.onload = function() {
+    window.onload = async function() {
       let id = localStorage.getItem("account_number");
       document.getElementById("account_number").innerText = id;
+      await updateUserData();
+
     }
-    document.addEventListener('DOMContentLoaded', recalcBalances);
+    
   </script>
 </head>
 <body>
@@ -108,7 +131,7 @@
 
     <div class="balance-section" id="balanceSection">
       <div class="balance-label" id="balanceLabel">Current Balance</div>
-      <div class="balance-amount">₪<span id="balanceAmount">15,247.83</span></div>
+      <div class="balance-amount">₪<span id="balanceAmount"></span></div>
       <div class="balance-updated" id="balanceUpdated">Last updated: 2025-06-22 14:00:00</div>
     </div>
 
@@ -123,30 +146,15 @@
       <table class="transactions-table">
         <thead>
           <tr>
-            <th>Date & Time</th>
+            <th>Date</th>
             <th>Description</th>
-            <th>Type</th>
             <th>Amount</th>
-            <th>Balance</th>
+            <th>Type</th>
           </tr>
         </thead>
-        <tbody id="transactionsTableBody">
-          <!-- Opening Balance -->
-          <tr class="transaction-row" id="openingBalanceRow">
-            <td class="transaction-date">2025-06-10 08:00:00</td>
-            <td class="transaction-description">Salary Deposit</td>
-            <td class="transaction-type">Deposit</td>
-            <td class="transaction-amount amount-positive">+₪15,247.83</td>
-            <td class="transaction-balance">₪15,247.83</td>
-          </tr>
-          <!-- Static Examples -->
-          <tr class="transaction-row" id="transaction1">
-            <td class="transaction-date">2025-06-15 08:00:00</td>
-            <td class="transaction-description">Rent Payment</td>
-            <td class="transaction-type">Deposit</td>
-            <td class="transaction-amount amount-positive">+₪8,500.00</td>
-            <td class="transaction-balance">₪23,747.83</td>
-          </tr>
+        <tbody id="transactionsBody">
+          
+      
         </tbody>
       </table>
     </div>

@@ -5,6 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Transfer Money</title>
   <link rel="stylesheet" href="../static/styles.css">
+  <script>
+    // Function to validate the transfer form
+    function validateTransferForm() {
+        const recipient = document.getElementById("recipient").value.trim();
+        const accountNumber = document.getElementById("accountNumber").value.trim();
+        const amount = parseFloat(document.getElementById("amount").value.trim());
+
+        if (!recipient) {
+            alert("Please enter the recipient's name.");
+            return false;
+        }
+
+        if (!accountNumber || accountNumber.length < 8) {
+            alert("Please enter a valid account number (at least 8 characters).");
+            return false;
+        }
+
+        if (isNaN(amount) || amount <= 0) {
+            alert("Please enter a valid amount greater than zero.");
+            return false;
+        }
+        return true;
+
+    }
+    async function checkTransfer()
+      {
+        const to_name = document.getElementById("recipient").value.trim();
+        const to_id = document.getElementById("accountNumber").value.trim();
+        const from_id = localStorage.getItem("account_number");
+        const amount = parseFloat(document.getElementById("amount").value.trim());
+        const description = document.getElementById("description").value.trim();
+
+        return fetch("http://127.0.0.1:5000/api/transfer",
+          {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              "from_id": from_id,
+              "to_id": to_id,
+              "recipient_name": to_name,
+              "amount": amount,
+              "description": description
+            })
+          }
+        ).then(res => res.json()).then(data => {
+          if (data.status == false) {
+            alert(data.text);
+            return false; 
+          } 
+          else 
+          {
+            return true; 
+          }
+        })
+      }
+
+      async function submitTransfer() 
+      {
+        result = validateTransferForm();
+        if (result == false) {
+          return false;
+        }
+        result = await checkTransfer();
+        if (result == false) {
+          return false;
+        }
+        else {
+          alert("Transfer successful");
+          window.location.href = "/page/confirmation"; // Redirect to confirmation page
+        }
+    }
+    </script>
 </head>
 <body>
   <form id="transferForm" class="form" novalidate autocomplete="off">
@@ -30,7 +104,7 @@
       <input id="description" name="description" type="text" placeholder="Payment description (optional)">
     </div>
 
-    <button type="submit" class="btn-primary">Send Transfer</button>
+    <button type="submit" onclick="submitTransfer()" class="btn-primary">Send Transfer</button>
 
     <div class="form-actions">
       <p class="form-footer">
@@ -38,50 +112,5 @@
       </p>
     </div>
   </form>
-
-  <script>
-    // Simple form validation with trim()
-    function validateTransferForm() {
-        const recipient = document.getElementById("recipient").value.trim();
-        const accountNumber = document.getElementById("accountNumber").value.trim();
-        const amountStr = document.getElementById("amount").value.trim();
-        const amount = parseFloat(amountStr);
-
-        if (!recipient) {
-            alert("Please enter the recipient's name.");
-            return false;
-        }
-
-        if (!accountNumber || accountNumber.length < 8) {
-            alert("Please enter a valid account number (at least 8 characters).");
-            return false;
-        }
-
-        if (!amountStr || isNaN(amount) || amount <= 0) {
-            alert("Please enter a valid amount.");
-            return false;
-        }
-        return true;
-       
-    }
-
-    document.getElementById('transferForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      if (!validateTransferForm()) return;
-
-      // Store form values and redirect to confirmation page
-      const recipient = document.getElementById("recipient").value.trim();
-      const accountNumber = document.getElementById("accountNumber").value.trim();
-      const amount = document.getElementById("amount").value.trim();
-      const description = document.getElementById("description").value.trim();
-
-      sessionStorage.setItem('recipient', recipient);
-      sessionStorage.setItem('accountNumber', accountNumber);
-      sessionStorage.setItem('amount', amount);
-      sessionStorage.setItem('description', description);
-
-      window.location.href = '/page/confirmation';
-    });
-  </script>
 </body>
 </html>
