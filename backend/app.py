@@ -2,6 +2,7 @@ from flask import Flask, render_template, send_from_directory, abort, request
 import os
 import json
 from datetime import datetime
+import db_handler
 
 frontend_path = os.path.abspath('../frontend')
 app = Flask(__name__, template_folder=frontend_path)
@@ -77,13 +78,10 @@ def is_valid_user():
         "status": False,
         "text": ""
     }
-    if id not in users:
-        response["text"] = "ID isn't registerd"
-    elif users[id]["password"] != password:
-        response["text"] = "Password is incorrect"
-    else:
-        response["status"] = True
-        response["text"] = "Valid User"
+    response["status"] = db_handler.check_user_credentials(id,password)
+    if not response["status"]:
+        response["text"] = "Pleas fill the correct credentials"
+
     return json.dumps(response)
 
 
@@ -107,23 +105,12 @@ def register_user():
         "status": False,
         "text": ""
     }
-    if id in users:
+
+    response["status"] = db_handler.insert_user(id, first_name, last_name, date_of_birth, gender, email,
+                           password, phone_number, address, zipcode, 5000)
+    if not response["status"]:
         response["text"] = "ID already exists"
-    else:
-        response["status"] = True
-        users[id] = {
-            "first_name": first_name,
-            "last_name": last_name,
-            "date_of_birth": date_of_birth,
-            "gender": gender,
-            "email": email,
-            "password": password,
-            "phone_number": phone_number,
-            "address": address,
-            "zipcode": zipcode,
-            "balance": 5000
-        }
-        response["text"] = "User registered successfully"
+
     return json.dumps(response)
 
 
