@@ -1,291 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>User Registration</title>
-  <link rel="stylesheet" href="../static/styles.css">
-  <script>
-    function validateRegistration() 
-    {
-
-      const id = document.getElementById("id").value;
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const dateOfBirth = document.getElementById("date_of_birth").value;
-      const gender = document.getElementById("gender").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirm_password").value;
-      const phoneNumber = document.getElementById("phone_number").value;
-      const address = document.getElementById("address").value;
-      const zipcode = document.getElementById("zipcode").value;
-      
-      // ID validation
-      if (id == "") {
-        alert("You must enter your ID number");
-        return false;
-      }
-
-      let isDigit = false;
-      for (let i = 0; i < id.length; i++) {
-        if (id[i] >= '0' && id[i] <= '9') {
-          isDigit = true;
-        } else {
-          // If any character is not a digit, ID is invalid
-          alert("ID number must contain only digits and be at least 5 characters long");
-          return false;
-        }
-      }
-      if (id.length < 5) {
-        alert("ID number must contain only digits and be at least 5 characters long");
-        return false;
-      }
-
-      // Name validations
-      if (firstname == "") {
-        alert("You must enter your first name");
-        return false;
-      }
-      if (lastname == "") {
-        alert("You must enter your last name");
-        return false;
-      }
-
-      // Date of birth validation
-      if (dateOfBirth == "") {
-        alert("You must enter your date of birth");
-        return false;
-      }
-
-      const today = new Date();
-      if (new Date(dateOfBirth) >= today) {
-        alert("Date of birth must be in the past");
-        return false;
-      }
-      
-      // Gender validation
-      if (gender === "") {
-        alert("You must select your gender");
-        return false;
-      }
-
-      // Email validation
-      if (email == "") {
-        alert("You must enter your email");
-        return false;
-      }
-      
-      const start_index = email.indexOf("@");
-      const end_index = email.indexOf(".", start_index); // Fixed: indexOf instead of IndexOf
-      
-      if (start_index == -1 || end_index == -1 || end_index <= start_index + 1) {
-        alert("You must enter a valid email address");
-        return false;
-      }
-      
-      // Password validation
-      if (password == "") {
-        alert("You must enter a password");
-        return false;
-      }
-
-      if (password.length < 8 || password.length > 16) {
-        alert("Password must be between 8 and 16 characters long");
-        return false;
-      }
-
-      let isUpper = false;
-      let isLower = false;
-      let isPasswordDigit = false; // Renamed to avoid conflict
-      let isSpecial = false;  
-
-      for(let i = 0; i < password.length; i++) {
-        if(password[i] >= 'A' && password[i] <= 'Z') {
-          isUpper = true;
-        } 
-        else if(password[i] >= 'a' && password[i] <= 'z') {
-          isLower = true;
-        } 
-        else if(password[i] >= '0' && password[i] <= '9') {
-          isPasswordDigit = true;
-        } 
-        else {
-          isSpecial = true;
-        }
-      }
-      
-      if (!isUpper || !isLower || !isPasswordDigit || !isSpecial) {
-        alert("Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
-        return false;
-      }
-
-      // Confirm password validation
-      if (confirmPassword == "") {
-        alert("You must confirm your password");
-        return false;
-      }
-      if (confirmPassword !== password) {
-        alert("Passwords do not match");
-        return false;
-      }
-
-      // Phone number validation
-      if (phoneNumber == "") {
-        alert("You must enter your phone number");
-        return false;
-      }
-      if (!phoneNumber.startsWith("05") || phoneNumber.length != 10) { // Fixed: OR instead of AND
-        alert("Phone number must start with 05 and be 10 characters long");
-        return false;
-      }
-
-      // Address validation
-      if (address == "") {
-        alert("You must enter your address");
-        return false;
-      }
-
-      // Zipcode validation
-      if (zipcode == "") {
-        alert("You must enter your ZIP / Postal code");
-        return false;
-      }
-      if (zipcode.length < 5 || zipcode.length > 10) {
-        alert("ZIP / Postal code must be between 5 and 10 characters long");
-        return false;
-      }
-     localStorage.setItem("account_number", id);
-      return true;
-    }
-    async function SaveRegisterInfo() 
-    {
-      const id = document.getElementById("id").value;
-      const firstname = document.getElementById("firstname").value;
-      const lastname = document.getElementById("lastname").value;
-      const dateOfBirth = document.getElementById("date_of_birth").value;
-      const gender = document.getElementById("gender").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const phoneNumber = document.getElementById("phone_number").value;
-      const address = document.getElementById("address").value;
-      const zipcode = document.getElementById("zipcode").value;
-
-      return fetch("http://127.0.0.1:5000/api/register", 
-        {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            "id": id,
-            "firstname": firstname,
-            "lastname": lastname,
-            "date_of_birth": dateOfBirth,
-            "gender": gender,
-            "email": email,
-            "password": password,
-            "phone_number": phoneNumber,
-            "address": address,
-            "zipcode": zipcode
-          })
-        }
-      ).then(res => res.json()).then(data => {
-          if (data.status == false) 
-          {
-            alert(data.text);
-            return false; 
-          } 
-          else 
-          {
-            return true; 
-          }
-        })
-      }
-    async function SubmitRegister()
-    {
-      result = validateRegistration();
-      if (result == false){
-        return false;
-      }
-
-      result = await SaveRegisterInfo();
-      if (result == false){
-        return false;
-      }
-      else 
-        window.location.href = "/page/account"
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Bank - Join Us</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/modern-styles.css">
 </head>
-<body>
-  <form id="registrationForm" onsubmit="SubmitRegister()" class="form" novalidate autocomplete="off">
-    <h1 class="form-title">User Registration</h1>
-
-    <div class="form-row">
-      <label for="id" class="required">ID Number</label>
-      <input id="id" name="id" type="text" placeholder="Enter your ID number">
+<body class="register-bg">
+    <!-- Background shapes -->
+    <div class="background-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
     </div>
 
-    <div class="form-row">
-      <label for="firstname" class="required">First Name</label>
-      <input id="firstname" name="firstname" type="text" placeholder="Enter your first name">
+    <div class="glass-container register-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <div class="logo large">
+                <i class="fas fa-sun"></i>
+            </div>
+            <h1 class="bank-name large">Aurora Bank</h1>
+            <p class="tagline">Banking that shines brighter</p>
+            <h2 class="form-title">Join Our Community</h2>
+        </div>
+
+        <!-- Success animation (hidden by default) -->
+        <div class="success-animation" id="successAnimation">
+            <div class="success-checkmark"></div>
+            <h3 class="success-message">Welcome to Aurora!</h3>
+            <p class="success-description">Your account has been created successfully. Redirecting to your dashboard...</p>
+        </div>
+
+        <!-- Registration form -->
+        <form id="registrationForm" class="form-grid" novalidate>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id" class="required">ID Number</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="id" name="id" class="form-input" placeholder="Enter ID number" required>
+                        <i class="fas fa-id-card input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone_number" class="required">Phone Number</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone_number" name="phone_number" class="form-input" placeholder="05XXXXXXXX" required>
+                        <i class="fas fa-phone input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstname" class="required">First Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="firstname" name="firstname" class="form-input" placeholder="Your first name" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastname" class="required">Last Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="lastname" name="lastname" class="form-input" placeholder="Your last name" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date_of_birth" class="required">Date of Birth</label>
+                    <div class="input-wrapper">
+                        <input type="date" id="date_of_birth" name="date_of_birth" class="form-input" required>
+                        <i class="fas fa-calendar input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender" class="required">Gender</label>
+                    <div class="input-wrapper">
+                        <select id="gender" name="gender" class="form-select" required>
+                            <option value="" disabled selected>Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <i class="fas fa-venus-mars input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row full-width">
+                <div class="form-group">
+                    <label for="email" class="required">Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" required>
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password" class="required">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" class="form-input" placeholder="Create password" required>
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password" class="required">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Confirm password" required>
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row full-width">
+                <div class="form-group">
+                    <label for="address" class="required">Address</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="address" name="address" class="form-input" placeholder="Street, City" required>
+                        <i class="fas fa-map-marker-alt input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="zipcode" class="required">ZIP Code</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="zipcode" name="zipcode" class="form-input" placeholder="Postal code" required>
+                        <i class="fas fa-mail-bulk input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" onclick="SubmitRegister()" class="btn-primary" id="registerBtn">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">Create Account</span>
+            </button>
+
+            <a href="/page/login" class="btn-secondary">
+                <i class="fas fa-sign-in-alt"></i> Already have an account? Sign In
+            </a>
+        </form>
     </div>
 
-    <div class="form-row">
-      <label for="lastname" class="required">Last Name</label>
-      <input id="lastname" name="lastname" type="text" placeholder="Enter your last name">
-    </div>
-
-    <div class="form-row">
-      <label for="date_of_birth" class="required">Date of Birth</label>
-      <input id="date_of_birth" name="date_of_birth" type="date">
-    </div>
-
-    <div class="form-row">
-      <label for="gender" class="required">Gender</label>
-      <select id="gender" name="gender">
-        <option value="" disabled selected>Select gender</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label for="email" class="required">Email</label>
-      <input id="email" name="email" type="email" placeholder="you@example.com">
-    </div>
-
-    <div class="form-row">
-      <label for="password" class="required">Password</label>
-      <input id="password" name="password" type="password" placeholder="Enter Password" title="8–16 characters">
-    </div>
-
-    <div class="form-row">
-      <label for="confirm_password" class="required">Confirm Password</label>
-      <input id="confirm_password" name="confirm_password" type="password" placeholder="Re-enter Password" title="8–16 characters">
-    </div>
-
-    <div class="form-row">
-      <label for="phone_number" class="required">Phone Number</label>
-      <input id="phone_number" name="phone_number" type="tel" placeholder="Must start with 05"
-        title="Must start with 05 followed by 8 digits">
-    </div>
-
-    <div class="form-row">
-      <label for="address" class="required">Address</label>
-      <input id="address" name="address" type="text" placeholder="Street, City">
-    </div>
-
-    <div class="form-row">
-      <label for="zipcode" class="required">ZIP / Postal Code</label>
-      <input id="zipcode" name="zipcode" type="text" placeholder="12345">
-    </div>
-
-    <button type="submit"  class="btn-primary">Register</button>
-    <a href="/page/login" class="btn-secondary">Already have an account? Login</a>
-  </div>
-  </form>
+    <script src="../static/register.js"></script>
 </body>
 </html>

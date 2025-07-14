@@ -1,163 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Account</title>
-  <link rel="stylesheet" href="../static/styles.css">
-  <link rel="stylesheet" href="../static/account.css">
-   <script>
-    
-    function fmt(num) {
-      return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-    }
-    function fmtDateTime(date) {
-      const options = {
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: false
-      };
-      return new Intl.DateTimeFormat('en-US', options).format(date);
-    }
-    function showTranscations(transactions) 
-    {
-      document.getElementById("transactionsBody").innerHTML = ""; // Clear previous transactions
-      if (transactions.length == 0) {
-        document.getElementById("transactionsBody").innerHTML = "<tr><td colspan='5'>No transactions found.</td></tr>";
-        return;
-      }
-      for (let i = transactions.length - 1; i >= 0; i--) 
-      {
-       let new_line = "<tr><td>" + transactions[i].date +"</td><td>" + transactions[i].description + "</td><td>" + '₪' + transactions[i].amount + "</td><td>" + transactions[i].type + "</td></tr>";
-       document.getElementById("transactionsBody").innerHTML += new_line;
-      }
-      
-    }
-    async function updateUserData() 
-    {
-      return fetch("http://127.0.0.1:5000/api/get_user_data", 
-          {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              "id": localStorage.getItem("account_number")
-            })
-          }
-        ).then(res => res.json()).then(data => {
-          if (data.status == false) {
-            alert(data.text);
-            return false; 
-          } 
-          else 
-          {
-            document.getElementById("balanceAmount").innerText = data.balance;
-            showTranscations(data.transactions);
-            return true; 
-          }
-        }
-      )
-    }
-    function addRow(desc, type, amount, balance) {
-      const now = new Date();
-      const tr = document.createElement('tr');
-      tr.className = 'transaction-row';
-      tr.innerHTML = `
-        <td class="transaction-date">${fmtDateTime(now)}</td>
-        <td class="transaction-description">${desc}</td>
-        <td class="transaction-type">${type}</td>
-        <td class="transaction-amount ${amount >= 0 ? 'amount-positive' : 'amount-negative'}">${amount >= 0 ? '+' : '-'}₪${fmt(Math.abs(amount))}</td>
-        <td class="transaction-balance">${balance}</td>
-      `;
-      document.getElementById('transactionsTableBody').appendChild(tr);
-    }
-
-    function withdrawMoney() 
-    {
-      amount = parseFloat(prompt('Enter amount to withdraw:'));
-      description = prompt('Enter description:');
-
-      return fetch("http://127.0.0.1:5000/api/withdraw", 
-          {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              "id": localStorage.getItem("account_number"),
-              "amount": amount,
-              "description": description
-            })
-          }
-        ).then(res => res.json()).then(data => {
-          if (data.status == false) {
-            alert(data.text);
-            return false; 
-          } 
-          else 
-          {
-            alert("Withdrawal successful!");
-            document.getElementById("balanceAmount").innerText = data.balance;
-            showTranscations(data.transactions);
-            return true; 
-          }
-        })
-    }
-    function transferMoney() {
-      window.location.href = '/page/transfer'; // Redirect to transfer page
-    }
-    function depositMoney() {
-      const input = prompt('Enter amount to deposit:');
-      const amt = parseFloat(input);
-      if (isNaN(amt) || amt <= 0) return;
-      addRow('Deposit', 'Deposit', amt);
-    }
-    window.onload = async function() {
-      let id = localStorage.getItem("account_number");
-      document.getElementById("account_number").innerText = id;
-      await updateUserData();
-
-    }
-    
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Bank - Account Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/modern-styles.css">
 </head>
-<body>
-  <div class="account-container" id="mainAccountContainer">
-    <div class="account-header" id="accountHeader">
-      <h1 id="welcomeMessage">Welcome Back, John Doe</h1>
-      <p id="accountNumber">Account Number: <label id="account_number"></label></p>
+<body class="dashboard-bg">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo medium">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h1 class="bank-name medium">Aurora Bank</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <span id="welcomeMessage">Welcome Back, John Doe</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="container">
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-content">
+                <div class="balance-header">
+                    <div class="account-info">
+                        <h1 id="welcomeTitle">Account Overview</h1>
+                        <p class="account-number">Account: <span id="accountNumber">Loading...</span></p>
+                    </div>
+                    <div class="balance-icon">
+                        <i class="fas fa-credit-card" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                </div>
+                <div class="balance-amount">₪<span id="balanceAmount">0.00</span></div>
+                <p class="last-updated" id="lastUpdated">Last updated: Loading...</p>
+            </div>
+        </div>
+
+        <!-- Action Cards -->
+        <div class="actions-grid">
+            <div class="action-card withdraw-card" onclick="showWithdrawModal()">
+                <div class="action-icon">
+                    <i class="fas fa-minus-circle"></i>
+                </div>
+                <h3 class="action-title">Withdraw</h3>
+                <p class="action-description">Withdraw cash from your account</p>
+            </div>
+
+            <div class="action-card transfer-card" onclick="goToTransfer()">
+                <div class="action-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3 class="action-title">Transfer</h3>
+                <p class="action-description">Send money to other accounts</p>
+            </div>
+
+            <div class="action-card deposit-card" onclick="showDepositModal()">
+                <div class="action-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h3 class="action-title">Deposit</h3>
+                <p class="action-description">Add funds to your account</p>
+            </div>
+        </div>
+
+        <!-- Transactions Card -->
+        <div class="transactions-card">
+            <div class="transactions-header">
+                <h2 class="transactions-title">Recent Transactions</h2>
+                <button class="view-all-btn">
+                    <i class="fas fa-list"></i> View All
+                </button>
+            </div>
+
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsBody">
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <i class="fas fa-receipt"></i>
+                            <p>Loading transactions...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="balance-section" id="balanceSection">
-      <div class="balance-label" id="balanceLabel">Current Balance</div>
-      <div class="balance-amount">₪<span id="balanceAmount"></span></div>
-      <div class="balance-updated" id="balanceUpdated">Last updated: 2025-06-22 14:00:00</div>
+    <!-- Withdraw Modal -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Withdraw Funds</h3>
+                <button class="close-btn" onclick="closeModal('withdrawModal')">&times;</button>
+            </div>
+            <form onsubmit="handleWithdraw(event)">
+                <div class="form-group">
+                    <label for="withdrawAmount" class="required">Amount (₪)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="withdrawAmount" class="form-input" placeholder="0.00" min="1" step="0.01" required>
+                        <i class="fas fa-shekel-sign input-icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawDescription">Description</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="withdrawDescription" class="form-input" placeholder="Optional description">
+                        <i class="fas fa-comment input-icon"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-minus-circle"></i> Confirm Withdrawal
+                </button>
+            </form>
+        </div>
     </div>
 
-    <div class="actions-section" id="actionsSection">
-      <button class="action-btn btn-withdraw" onclick="withdrawMoney()">Withdraw Money</button>
-      <button class="action-btn btn-transfer" onclick="transferMoney()">Transfer Money</button>
-      <button class="action-btn btn-deposit" onclick="depositMoney()">Deposit Money</button>
+    <!-- Deposit Modal -->
+    <div class="modal" id="depositModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Deposit Funds</h3>
+                <button class="close-btn" onclick="closeModal('depositModal')">&times;</button>
+            </div>
+            <form onsubmit="handleDeposit(event)">
+                <div class="form-group">
+                    <label for="depositAmount" class="required">Amount (₪)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="depositAmount" class="form-input" placeholder="0.00" min="1" step="0.01" required>
+                        <i class="fas fa-shekel-sign input-icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="depositDescription">Description</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="depositDescription" class="form-input" placeholder="Optional description">
+                        <i class="fas fa-comment input-icon"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Confirm Deposit
+                </button>
+            </form>
+        </div>
     </div>
 
-    <div class="transactions-section" id="transactionsSection">
-      <h2 class="section-title">Recent Transactions</h2>
-      <table class="transactions-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody id="transactionsBody">
-          
-      
-        </tbody>
-      </table>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
     </div>
-  </div>
+
+    <script src="../static/account.js"></script>
 </body>
 </html>

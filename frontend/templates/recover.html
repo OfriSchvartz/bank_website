@@ -1,134 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Reset Password</title>
-  <link rel="stylesheet" href="../static/styles.css">
-  <script>
-    function validateResetForm() {
-      const email = document.getElementById("email").value;
-      const id = document.getElementById("id").value;
-      
-      // Clear previous error messages
-      clearErrorMessages();
-      
-      let isValid = true;
-      
-      // Validate ID
-      if (id === "") {
-        showError("id", "Please enter your ID number");
-        isValid = false;
-      } else if (id.length !== 9 || !/^\d{9}$/.test(id)) {
-        showError("id", "ID must be exactly 9 digits");
-        isValid = false;
-      }
-      
-      // Validate Email
-      if (email === "") {
-        showError("email", "Please enter your email address");
-        isValid = false;
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showError("email", "Please enter a valid email address");
-        isValid = false;
-      }
-      
-      if (isValid) {
-        // Simulate sending reset email
-        alert("Password reset instructions have been sent to your email address.");
-        // In a real application, you would send an API request here
-        // For now, redirect back to login
-        setTimeout(() => {
-          window.location.href = "/page/login";
-        }, 2000);
-      }
-      
-      return false; // Prevent form submission
-    }
-    
-    function showError(fieldId, message) {
-      const field = document.getElementById(fieldId);
-      const formRow = field.closest('.form-row');
-      
-      // Add error class to field
-      field.classList.add('invalid');
-      
-      // Create error message element
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'error-message';
-      errorDiv.textContent = message;
-      errorDiv.id = fieldId + '-error';
-      
-      // Add error message to form row
-      formRow.appendChild(errorDiv);
-    }
-    
-    function clearErrorMessages() {
-      // Remove all error messages
-      const errorMessages = document.querySelectorAll('.error-message');
-      errorMessages.forEach(error => error.remove());
-      
-      // Remove invalid class from all fields
-      const invalidFields = document.querySelectorAll('.invalid');
-      invalidFields.forEach(field => field.classList.remove('invalid'));
-    }
-    
-    function clearFieldError(fieldId) {
-      const field = document.getElementById(fieldId);
-      const errorMessage = document.getElementById(fieldId + '-error');
-      
-      if (errorMessage) {
-        errorMessage.remove();
-      }
-      field.classList.remove('invalid');
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Bank - Reset Password</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/modern-styles.css">
 </head>
-<body>
-  <form id="resetPasswordForm" class="form" novalidate autocomplete="off">
-    <h1 class="form-title" id="resetTitle">Reset Password</h1>
-    
-    <div class="login-container" id="logoContainer">
-      <img class="logo" src="../images/bank.jpg" alt="Bank Logo" title="Bank Logo" id="bankLogo">
-    </div>
-    
-    <p class="form-description" id="resetDescription">
-      Enter your ID number and email address to receive password reset instructions.
-    </p>
+<body class="login-bg">
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
 
-    <div class="form-row" id="idRow">
-      <label for="id" class="required">ID Number</label>
-      <input
-        id="id" 
-        name="id" 
-        type="text" 
-        placeholder="Enter your 9-digit ID number"
-        maxlength="9"
-        title="Enter your 9-digit ID number"
-        oninput="clearFieldError('id')">
+    <div class="glass-container recover-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <div class="logo large">
+                <i class="fas fa-sun"></i>
+            </div>
+            <h1 class="bank-name large">Aurora Bank</h1>
+            <p class="tagline">Banking that shines brighter</p>
+            <h2 class="form-title">
+                <i class="fas fa-key"></i> Reset Password
+            </h2>
+            <p class="form-description">
+                Enter your account details to receive password reset instructions.
+            </p>
+        </div>
+
+        <!-- Success animation (hidden by default) -->
+        <div class="success-animation" id="successAnimation">
+            <div class="success-checkmark">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <h3 class="success-message">Email Sent!</h3>
+            <p class="success-description">Password reset instructions have been sent to your email address.</p>
+        </div>
+
+        <!-- Recovery form -->
+        <form id="recoveryForm" class="form-grid" novalidate>
+            <div class="form-group">
+                <label for="id" class="required">Account ID</label>
+                <div class="input-wrapper">
+                    <input type="text" id="id" name="id" class="form-input" placeholder="Enter your account ID" required>
+                    <i class="fas fa-id-card input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="required">Email Address</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" name="email" class="form-input" placeholder="Enter your registered email" required>
+                    <i class="fas fa-envelope input-icon"></i>
+                </div>
+            </div>
+
+            <!-- Security verification -->
+            <div class="security-info">
+                <div class="security-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Security Verification</span>
+                </div>
+                <p class="security-text">
+                    For your security, we'll verify your identity before sending reset instructions. 
+                    Please ensure the information above matches your account details.
+                </p>
+            </div>
+
+            <button type="button" onclick="submitRecovery()" class="btn-primary" id="recoveryBtn">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">
+                    <i class="fas fa-paper-plane"></i> Send Reset Instructions
+                </span>
+            </button>
+
+            <div class="form-footer">
+                Remember your password? <a href="/page/login">Back to Login</a><br>
+                Need to create an account? <a href="/page/register">Register here</a>
+            </div>
+        </form>
     </div>
 
-    <div class="form-row" id="emailRow">
-      <label for="email" class="required">Email Address</label>
-      <input
-        id="email" 
-        name="email" 
-        type="email" 
-        placeholder="Enter your registered email"
-        title="Enter the email address associated with your account"
-        oninput="clearFieldError('email')">
-    </div>
-
-    <button type="button" onclick="validateResetForm()" class="btn-primary" id="resetBtn">
-      Send Reset Instructions
-    </button>
-    
-    <div class="form-actions" id="formActions">
-      <p class="form-footer" id="resetFooter">
-        Remember your password? <a href="/page/login" id="loginLink">Back to Login</a><br>
-        Need to create an account? <a href="/page/register" id="registerLink">Register here</a>
-      </p>
-    </div>
-  </form>
+    <script src="../static/recover.js"></script>
 </body>
 </html>
