@@ -1,116 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Transfer Money</title>
-  <link rel="stylesheet" href="../static/styles.css">
-  <script>
-    // Function to validate the transfer form
-    function validateTransferForm() {
-        const recipient = document.getElementById("recipient").value.trim();
-        const accountNumber = document.getElementById("accountNumber").value.trim();
-        const amount = parseFloat(document.getElementById("amount").value.trim());
-
-        if (!recipient) {
-            alert("Please enter the recipient's name.");
-            return false;
-        }
-
-        if (!accountNumber || accountNumber.length < 8) {
-            alert("Please enter a valid account number (at least 8 characters).");
-            return false;
-        }
-
-        if (isNaN(amount) || amount <= 0) {
-            alert("Please enter a valid amount greater than zero.");
-            return false;
-        }
-        return true;
-
-    }
-    async function checkTransfer()
-      {
-        const to_name = document.getElementById("recipient").value.trim();
-        const to_id = document.getElementById("accountNumber").value.trim();
-        const from_id = localStorage.getItem("account_number");
-        const amount = parseFloat(document.getElementById("amount").value.trim());
-        const description = document.getElementById("description").value.trim();
-
-        return fetch("http://127.0.0.1:5000/api/transfer",
-          {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              "from_id": from_id,
-              "to_id": to_id,
-              "recipient_name": to_name,
-              "amount": amount,
-              "description": description
-            })
-          }
-        ).then(res => res.json()).then(data => {
-          if (data.status == false) {
-            alert(data.text);
-            return false; 
-          } 
-          else 
-          {
-            return true; 
-          }
-        })
-      }
-
-      async function submitTransfer() 
-      {
-        result = validateTransferForm();
-        if (result == false) {
-          return false;
-        }
-        result = await checkTransfer();
-        if (result == false) {
-          return false;
-        }
-        else {
-          alert("Transfer successful");
-          window.location.href = "/page/confirmation"; // Redirect to confirmation page
-        }
-    }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Bank - Transfer Money</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/modern-styles.css">
 </head>
-<body>
-  <form id="transferForm" class="form" novalidate autocomplete="off">
-    <h1 class="form-title">Transfer Money</h1>
-
-    <div class="form-row">
-      <label for="recipient" class="required">Recipient Name</label>
-      <input id="recipient" name="recipient" type="text" placeholder="Enter recipient name">
+<body class="register-bg">
+    <!-- Background shapes -->
+    <div class="background-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
     </div>
 
-    <div class="form-row">
-      <label for="accountNumber" class="required">Recipient Account #</label>
-      <input id="accountNumber" name="accountNumber" type="text" placeholder="Enter account number">
+    <div class="glass-container transfer-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <div class="logo large">
+                <i class="fas fa-sun"></i>
+            </div>
+            <h1 class="bank-name large">Aurora Bank</h1>
+            <p class="tagline">Banking that shines brighter</p>
+            <h2 class="form-title">
+                <i class="fas fa-exchange-alt"></i> Transfer Money
+            </h2>
+        </div>
+
+        <!-- Success animation (hidden by default) -->
+        <div class="success-animation" id="successAnimation">
+            <div class="success-checkmark"></div>
+            <h3 class="success-message">Transfer Successful!</h3>
+            <p class="success-description">Your money has been transferred successfully. Redirecting...</p>
+        </div>
+
+        <!-- Transfer form -->
+        <form id="transferForm" class="form-grid" novalidate>
+            <div class="form-row full-width">
+                <div class="form-group">
+                    <label for="recipient" class="required">Recipient Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="recipient" name="recipient" class="form-input" placeholder="Enter recipient's full name" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row full-width">
+                <div class="form-group">
+                    <label for="accountNumber" class="required">Recipient Account Number</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="accountNumber" name="accountNumber" class="form-input" placeholder="Enter account number" required>
+                        <i class="fas fa-credit-card input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="amount" class="required">Amount (₪)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="amount" name="amount" class="form-input" placeholder="0.00" min="0.01" step="0.01" required>
+                        <i class="fas fa-shekel-sign input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description (Optional)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="description" name="description" class="form-input" placeholder="Payment description">
+                        <i class="fas fa-comment input-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transfer Summary Card -->
+            <div class="transfer-summary" id="transferSummary" style="display: none;">
+                <h3>Transfer Summary</h3>
+                <div class="summary-row">
+                    <span>To:</span>
+                    <span id="summaryRecipient">-</span>
+                </div>
+                <div class="summary-row">
+                    <span>Account:</span>
+                    <span id="summaryAccount">-</span>
+                </div>
+                <div class="summary-row">
+                    <span>Amount:</span>
+                    <span id="summaryAmount">₪0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Description:</span>
+                    <span id="summaryDescription">-</span>
+                </div>
+            </div>
+
+            <button type="button" onclick="submitTransfer()" class="btn-primary" id="transferBtn">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">
+                    <i class="fas fa-paper-plane"></i> Send Transfer
+                </span>
+            </button>
+
+            <div class="form-actions mt-3">
+                <a href="/page/account" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Account
+                </a>
+            </div>
+        </form>
     </div>
 
-    <div class="form-row">
-      <label for="amount" class="required">Amount (₪)</label>
-      <input id="amount" name="amount" type="number" step="0.01" min="0" placeholder="0.00">
-    </div>
-
-    <div class="form-row">
-      <label for="description">Description</label>
-      <input id="description" name="description" type="text" placeholder="Payment description (optional)">
-    </div>
-
-    <button type="submit" onclick="submitTransfer()" class="btn-primary">Send Transfer</button>
-
-    <div class="form-actions">
-      <p class="form-footer">
-        <a href="/page/account">← Back to Account</a>
-      </p>
-    </div>
-  </form>
+    <script src="../static/transfer.js"></script>
 </body>
 </html>

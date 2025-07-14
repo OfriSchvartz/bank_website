@@ -1,141 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
-    <link rel="stylesheet" href="../static/styles.css">
-    <script>
-      function validateLogin()
-      {
-      const id = document.getElementById("id").value;
-      const password = document.getElementById("password").value;
-      if(id == "")
-        {
-        alert("Please enter bank id");
-        return false;
-        }
-        else if(id.length < 5)
-        {
-        alert("Bank ID must be at least 5 characters long");
-        return false;
-        }
-                
-        if(password == "")
-        {
-        alert("Please enter password");
-        return false;
-        }
-        else if(password.length < 8)
-        {
-        alert("Password must be at least 8 characters long");
-        return false;
-        }
-
-        isUpper = false;
-        isLower = false;
-        isDigit = false;
-        isSpecial = false;
-
-        for(let i=0; i<password.length; i++) {
-          if(password[i] >= 'A' && password[i] <= 'Z') {
-            isUpper = true;
-          } 
-          else if(password[i] >= 'a' && password[i] <= 'z') {
-            isLower = true;
-          } 
-          else if(password[i] >= '0' && password[i] <= '9') {
-            isDigit = true;
-          } 
-          else {
-            isSpecial = true;
-          }
-        }
-          if (isUpper == false || isLower == false || isDigit == false || isSpecial == false) {
-            alert("Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
-            return false;
-          }
-
-        localStorage.setItem("account_number", id);
-        return true;
-      }
-      async function checkLoginInfo()
-      {
-        const id = document.getElementById("id").value;
-        const password = document.getElementById("password").value;
-        return fetch("http://127.0.0.1:5000/api/login",
-          {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              "id": id,
-              "password": password
-            })
-          }
-        ).then(res => res.json()).then(data => {
-          if (data.status == false) {
-            alert(data.text);
-            return false; 
-          } 
-          else 
-          {
-            return true; 
-          }
-        })
-      }
-
-      async function submitLogin() 
-      {
-        
-        result = validateLogin();
-        if (result == false) {
-          return false;
-        }
-        result = await checkLoginInfo();
-        if (result == false) {
-          return false;
-        }
-        else {
-          alert("Login successful");  
-          window.location.href = "/page/account";
-        }
-    }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Bank - Secure Banking Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/modern-styles.css">
 </head>
-<body>
-  <form id="loginForm" class="form" novalidate autocomplete="off">
-    <h1 class="form-title">Login</h1>
-      <div class="login-container">
-        <img class="logo" src="../images/bank.jpg" alt="Bank Logo" title="Bank Logo" id="logo">
-      </div>
+<body class="login-bg">
+    <div class="professional-container login-container">
+        <!-- Logo and branding -->
+        <div class="text-center mb-4">
+            <div class="logo large">
+                <i class="fas fa-university"></i>
+            </div>
+            <h1 class="bank-name large">Aurora Bank</h1>
+            <p class="tagline">Secure Banking Solutions</p>
+        </div>
 
-    <div class="form-row">
-      <label for="id" class="required">ID Number</label>
-      <input
-        id="id" name="id" type="text" placeholder="Enter your ID number"  title="Fill out this field.">
+        <!-- Success animation (hidden by default) -->
+        <div class="success-checkmark" id="successCheckmark"></div>
+
+        <!-- Login form -->
+        <form id="loginForm" novalidate>
+            <h2 class="form-title">Secure Login</h2>
+            <p class="form-description">Access your account securely</p>
+
+            <div class="form-group">
+                <label for="id" class="required">Account ID</label>
+                <div class="input-wrapper">
+                    <input type="text" id="id" name="id" class="form-input" placeholder="Enter your account ID" required autocomplete="username">
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="required">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <span class="checkmark"></span>
+                </div>
+                <label for="rememberMe" class="checkbox-label">Keep me signed in for 30 days</label>
+            </div>
+
+            <button type="submit" class="btn-primary" id="loginBtn">
+                <span class="loading-spinner" id="loadingSpinner"></span>
+                <span id="buttonText">
+                    <i class="fas fa-sign-in-alt"></i> Sign In Securely
+                </span>
+            </button>
+
+            <div class="form-footer">
+                <p>New to Aurora Bank? <a href="/page/register">Open an Account</a></p>
+                <p><a href="/page/recover">Forgot Password?</a></p>
+            </div>
+        </form>
     </div>
 
-    <div class="form-row">
-      <label for="password" class="required">Password</label>
-      <input
-        id="password" name="password" type="password" placeholder="Enter your password" title="Fill out this field.">
-    </div>
-
-    <div class="form-row form-checkbox">
-        <input id="rememberMe" name="rememberMe" type="checkbox">
-        <label for="rememberMe">Remember Me</label>
-    </div>
-
-    <button type="button" onclick="submitLogin()" class="btn-primary">Login</button>
-    
-    <p class="form-footer">
-      Don’t have an account? <a href="/page/register">Register here</a><br>
-      Forgot your password? <a href="/page/recover">Reset Password</a>
-    </p>
-  </form>
-
-  
+    <script src="../static/login.js"></script>
 </body>
 </html>

@@ -1,65 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Transfer Confirmation</title>
-  <link rel="stylesheet" href="../static/styles.css">
-  <link rel="stylesheet" href="../static/account.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Bank - Transfer Confirmation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/modern-styles.css">
 </head>
-<body>
-  <div class="form confirmation-card">
-    <h1 class="form-title">Transfer Successful</h1>
+<body class="login-bg">
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
 
-    <div class="form-row">
-      <label>Recipient:</label>
-      <p id="conf-recipient">{{recipientName}}</p>
+    <div class="glass-container confirmation-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <div class="logo large">
+                <i class="fas fa-sun"></i>
+            </div>
+            <h1 class="bank-name large">Aurora Bank</h1>
+            <p class="tagline">Banking that shines brighter</p>
+        </div>
+
+        <!-- Success checkmark animation -->
+        <div class="success-animation">
+            <div class="success-checkmark large-check">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2 class="success-message">Transfer Successful!</h2>
+            <p class="success-description">Your money has been transferred successfully.</p>
+        </div>
+
+        <!-- Confirmation Details -->
+        <div class="confirmation-details">
+            <h3 class="details-title">Transaction Details</h3>
+            
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-user"></i>
+                    Recipient
+                </div>
+                <div class="detail-value" id="conf-recipient">Loading...</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-credit-card"></i>
+                    Account Number
+                </div>
+                <div class="detail-value" id="conf-account">Loading...</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-shekel-sign"></i>
+                    Amount
+                </div>
+                <div class="detail-value amount-highlight" id="conf-amount">₪0.00</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-comment"></i>
+                    Description
+                </div>
+                <div class="detail-value" id="conf-description">-</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-clock"></i>
+                    Date & Time
+                </div>
+                <div class="detail-value" id="conf-datetime">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Auto redirect notification -->
+        <div class="redirect-notification" id="redirectNotification">
+            <i class="fas fa-info-circle"></i>
+            Redirecting to your account in <span id="countdown">5</span> seconds...
+        </div>
+
+        <!-- Action buttons -->
+        <div class="confirmation-actions">
+            <button onclick="goToAccount()" class="btn-primary">
+                <i class="fas fa-home"></i> Back to Account
+            </button>
+            
+            <button onclick="newTransfer()" class="btn-secondary">
+                <i class="fas fa-plus"></i> New Transfer
+            </button>
+        </div>
     </div>
 
-    <div class="form-row">
-      <label>Account #:</label>
-      <p id="conf-account">{{accountNumber}}</p>
-    </div>
-
-    <div class="form-row">
-      <label>Amount:</label>
-      <p id="conf-amount">₪{{amount}}</p>
-    </div>
-
-    <div class="form-row">
-      <label>Description:</label>
-      <p id="conf-description">{{description or '—'}}</p>
-    </div>
-
-    <div class="form-row">
-      <label>Date & Time:</label>
-      <p id="conf-datetime">{{dateTime}}</p>
-    </div>
-
-    <div id="redirectOverlay" class="redirect-overlay">
-    <div class="redirect-alert">Redirecting to Account Page...</div>
-  </div>
-
-    <div class="form-actions">
-      <button onclick="window.location='/page/account'" class="btn-primary">Back to Account</button>
-      <button onclick="window.location='/page/transfer'" class="btn-secondary">New Transfer</button>
-    </div>
-  </div>
-
-  <script>
-    // Populate confirmation details from sessionStorage or server-rendered variables
-    document.getElementById('conf-recipient').textContent = sessionStorage.getItem('recipient');
-    document.getElementById('conf-account').textContent = sessionStorage.getItem('accountNumber');
-    document.getElementById('conf-amount').textContent = '₪' + sessionStorage.getItem('amount');
-    const desc = sessionStorage.getItem('description');
-    document.getElementById('conf-description').textContent = desc ? desc : '—';
-    document.getElementById('conf-datetime').textContent = new Date().toLocaleString();
-    // Redirect back to account page after 3 seconds
-    setTimeout(
-        function(){
-      window.location.href = "/page/account";
-    }, 3000);
-
-  </script>
+    <script src="../static/confirmation.js"></script>
 </body>
 </html>
