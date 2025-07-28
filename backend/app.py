@@ -1,253 +1,378 @@
-from flask import Flask, render_template, send_from_directory, abort, request
+from flask import Flask, render_template, send_from_directory, abort, request, jsonify
 import os
 import json
-from datetime import datetime
+import db_handler
 
 frontend_path = os.path.abspath('../frontend')
 app = Flask(__name__, template_folder=frontend_path)
 
-users = {
-    "305679442": {
-        "first_name": "John",
-        "last_name": "abruzi",
-        "date_of_birth": "23/7/1976",
-        "gender": "Male",
-        "email": "John528@gmail.com",
-        "password": "Cc#123456",
-        "phone": "0558769765",
-        "address": "Israel",
-        "zip": "54329",
-        "balance": 5000
-    },
-    "269783214": {
-        "first_name": "yossi",
-        "last_name": "tbag",
-        "date_of_birth": "01/01/1990",
-        "gender": "Male",
-        "email": "yossidad@gmail.com",
-        "password": "Cc#123456",
-        "phone": "0557958234",
-        "address": "123 Main St, Springfield",
-        "zip": "1234567",
-        "balance": 5000
-    },
-}
+
+# Initialize database on startup
+db_handler.init_database()
+
 transactions = {
 
 }
 
 
-@app.route('/page/<path:page_name>')
-def get_page_name(page_name):
-    if os.path.exists(f'{frontend_path}/templates/{page_name}.html'):
-        return render_template(f'/templates/{page_name}.html')
-    else:
-        return abort(404)
 
-
+# Page Routes
 @app.route('/')
 def login_page():
     return render_template('/templates/login.html')
 
 
-@app.route('/static/styles.css')
-def get_styles():
-    return send_from_directory(f'{frontend_path}/static', 'styles.css')
+@app.route('/page/login')
+def login_redirect():
+    return render_template('/templates/login.html')
 
 
-@app.route('/static/account.css')
-def account_styles():
-    return send_from_directory(f'{frontend_path}/static', 'account.css')
+@app.route('/page/account')
+def account_page():
+    return render_template('/templates/account.html')
 
 
-@app.route('/images/bank.jpg')
-def get_bank_image():
-    return send_from_directory(f'{frontend_path}/images', 'bank.jpg')
+@app.route('/page/register')
+def register_page():
+    return render_template('/templates/register.html')
 
 
-@app.route('/api/login', methods=['POST'])
-def is_valid_user():
-    global users
+@app.route('/page/transfer')
+def transfer_page():
+    return render_template('/templates/transfer.html')
 
-    data = request.json
-    id = data.get("id")
-    password = data.get("password")
 
-    response = {
-        "status": False,
-        "text": ""
-    }
-    if id not in users:
-        response["text"] = "ID isn't registerd"
-    elif users[id]["password"] != password:
-        response["text"] = "Password is incorrect"
+@app.route('/page/confirmation')
+def confirmation_page():
+    return render_template('/templates/confirmation.html')
+
+
+@app.route('/page/recover')
+def recover_page():
+    return render_template('/templates/recover.html')
+
+
+# Generic page handler for any additional pages
+@app.route('/page/<path:page_name>')
+def get_page_name(page_name):
+    valid_pages = ['login', 'account', 'register', 'transfer', 'confirmation', 'recover']
+    if page_name in valid_pages and os.path.exists(f'{frontend_path}/templates/{page_name}.html'):
+        return render_template(f'/templates/{page_name}.html')
     else:
-        response["status"] = True
-        response["text"] = "Valid User"
-    return json.dumps(response)
+        return abort(404)
+
+
+# Static File Routes
+@app.route('/static/modern-styles.css')
+def modern_styles():
+    response = send_from_directory(f'{frontend_path}/static', 'modern-styles.css')
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+
+@app.route('/static/login.js')
+def login_js():
+    return send_from_directory(f'{frontend_path}/static', 'login.js')
+
+
+@app.route('/static/account.js')
+def account_js():
+    return send_from_directory(f'{frontend_path}/static', 'account.js')
+
+
+@app.route('/static/register.js')
+def register_js():
+    return send_from_directory(f'{frontend_path}/static', 'register.js')
+
+
+@app.route('/static/transfer.js')
+def transfer_js():
+    return send_from_directory(f'{frontend_path}/static', 'transfer.js')
+
+
+@app.route('/static/confirmation.js')
+def confirmation_js():
+    return send_from_directory(f'{frontend_path}/static', 'confirmation.js')
+
+
+@app.route('/static/recover.js')
+def recover_js():
+    return send_from_directory(f'{frontend_path}/static', 'recover.js')
+
+
+# Generic static file handler for any additional assets
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    try:
+        return send_from_directory(f'{frontend_path}/static', filename)
+    except:
+        return abort(404)
+
+
+# Images (if needed in the future)
+@app.route('/images/<path:filename>')
+def get_images(filename):
+    try:
+        return send_from_directory(f'{frontend_path}/images', filename)
+    except:
+        return abort(404)
+
+
+# API Routes
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": False, "text": "Invalid request data"})
+
+        id = data.get("id")
+        password = data.get("password")
+
+        if not id or not password:
+            return jsonify({"status": False, "text": "ID and password are required"})
+
+        response = {
+            "status": False,
+            "text": ""
+        }
+
+        response["status"] = db_handler.check_user_credentials(id, password)
+        if not response["status"]:
+            response["text"] = "Please fill the correct credentials"
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"status": False, "text": "Login failed. Please try again."})
 
 
 @app.route('/api/register', methods=['POST'])
-def register_user():
-    global users
+def api_register():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": False, "text": "Invalid request data"})
 
-    data = request.json
-    id = data.get("id")
-    first_name = data.get("first_name")
-    last_name = data.get("last_name")
-    date_of_birth = data.get("date_of_birth")
-    gender = data.get("gender")
-    email = data.get("email")
-    password = data.get("password")
-    phone_number = data.get("phone_number")
-    address = data.get("address")
-    zipcode = data.get("zipcode")
+        # Extract and validate required fields
+        required_fields = ['id', 'first_name', 'last_name', 'date_of_birth', 'gender',
+                           'email', 'password', 'phone_number', 'address', 'zipcode']
 
-    response = {
-        "status": False,
-        "text": ""
-    }
-    if id in users:
-        response["text"] = "ID already exists"
-    else:
-        response["status"] = True
-        users[id] = {
-            "first_name": first_name,
-            "last_name": last_name,
-            "date_of_birth": date_of_birth,
-            "gender": gender,
-            "email": email,
-            "password": password,
-            "phone_number": phone_number,
-            "address": address,
-            "zipcode": zipcode,
-            "balance": 5000
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"status": False, "text": f"{field.replace('_', ' ').title()} is required"})
+
+        response = {
+            "status": False,
+            "text": ""
         }
-        response["text"] = "User registered successfully"
-    return json.dumps(response)
+
+        response["status"] = db_handler.insert_user(
+            data.get("id"), data.get("first_name"), data.get("last_name"),
+            data.get("date_of_birth"), data.get("gender"), data.get("email"),
+            data.get("password"), data.get("phone_number"), data.get("address"),
+            data.get("zipcode"), 5000
+        )
+
+        if not response["status"]:
+            response["text"] = "ID already exists"
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"status": False, "text": "Registration failed. Please try again."})
 
 
 @app.route('/api/withdraw', methods=['POST'])
-def handle_withdraw():
-    global users
-    global transactions
-    data = request.json
+def api_withdraw():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": False, "text": "Invalid request data"})
 
-    id = data.get("id")
-    amount = data.get("amount")
-    description = data.get("description")
-    response = {
-        "status": False,
-        "text": "",
-        "balance": 0,
-        "transactions": []
-    }
-    if id not in users:
-        response["text"] = "ID isn't registered"
-    elif users[id]["balance"] < amount:
-        response["text"] = f"Insufficient balance: you have only {users[id]['balance']} in your account"
-    else:
-        new_transaction = {
-            "type": "Withdraw",
-            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "description": description,
-            "amount": amount
+        id = data.get("id")
+        amount = data.get("amount")
+        description = data.get("description", "Withdrawal")
 
+        if not id or not amount:
+            return jsonify({"status": False, "text": "ID and amount are required"})
+
+        if amount <= 0:
+            return jsonify({"status": False, "text": "Amount must be greater than 0"})
+
+        response = {
+            "status": False,
+            "text": "",
+            "balance": 0,
+            "transactions": []
         }
-        if id not in transactions:
-            transactions[id] = [new_transaction]
-        else:
-            transactions[id].append(new_transaction)
-        users[id]["balance"] -= amount
-        response["status"] = True
-        response["balance"] = users[id]["balance"]
-        if len(transactions[id]) <= 4:
-            response["transactions"] = transactions[id]
-        else:
-            response["transactions"] = transactions[id][-4:]
 
-    return json.dumps(response)
+        # Perform withdrawal
+        success, message, new_balance = db_handler.withdraw_money(id, amount, description)
+
+        response["status"] = success
+        response["text"] = message
+        response["balance"] = new_balance
+
+        if success:
+            # Get updated transactions
+            transactions = db_handler.get_user_transactions(id, 4)
+            response["transactions"] = transactions
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"status": False, "text": "Withdrawal failed. Please try again."})
+
+
+@app.route('/api/deposit', methods=['POST'])
+def api_deposit():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": False, "text": "Invalid request data"})
+
+        id = data.get("id")
+        amount = data.get("amount")
+        description = data.get("description", "Deposit")
+
+        if not id or not amount:
+            return jsonify({"status": False, "text": "ID and amount are required"})
+
+        if amount <= 0:
+            return jsonify({"status": False, "text": "Amount must be greater than 0"})
+
+        response = {
+            "status": False,
+            "text": "",
+            "balance": 0,
+            "transactions": []
+        }
+
+        # Get current user
+        user = db_handler.get_user_by_id(id)
+
+        if not user:
+            response["text"] = "User ID not found"
+        else:
+            # Update balance
+            new_balance = user["balance"] + amount
+
+            if db_handler.update_user_balance(id, new_balance):
+                # Insert transaction
+                if db_handler.insert_transaction(id, "Deposit", description, amount):
+                    response["status"] = True
+                    response["balance"] = new_balance
+                    response["text"] = "Deposit successful"
+
+                    # Get updated transactions
+                    transactions = db_handler.get_user_transactions(id, 4)
+                    response["transactions"] = transactions
+                else:
+                    response["text"] = "Failed to record transaction"
+            else:
+                response["text"] = "Failed to update balance"
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"status": False, "text": "Deposit failed. Please try again."})
 
 
 @app.route('/api/get_user_data', methods=['POST'])
-def get_user_data():
-    global users
-    global transactions
-    data = request.json
-    id = data.get("id")
-    response = {
-        "status": False,
-        "text": "",
-        "balance": 0,
-        "transactions": []
-    }
-    if id not in users:
-        response["text"] = "ID isn't registered"
-    else:
-        response["status"] = True
-        response["balance"] = users[id]["balance"]
-        if id not in transactions:
-            response["transactions"] = []
-        elif len(transactions[id]) <= 4:
-            response["transactions"] = transactions[id]
-        else:
-            response["transactions"] = transactions[id][-4:]
+def api_get_user_data():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": False, "text": "Invalid request data"})
 
-    return json.dumps(response)
+        id = data.get("id")
+        if not id:
+            return jsonify({"status": False, "text": "User ID is required"})
+
+        response = {
+            "status": False,
+            "text": "",
+            "balance": 0,
+            "transactions": [],
+            "user_name": ""
+        }
+
+        # Get user data from database
+        user = db_handler.get_user_by_id(id)
+
+        if not user:
+            response["text"] = "ID isn't registered"
+        else:
+            response["status"] = True
+            response["balance"] = user["balance"]
+            response["user_name"] = f"{user['first_name']} {user['last_name']}"
+
+            # Get user transactions
+            transactions = db_handler.get_user_transactions(id, 4)
+            response["transactions"] = transactions
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"status": False, "text": "Failed to load user data. Please try again."})
 
 
 @app.route('/api/transfer', methods=['POST'])
-def handle_transfer():
-    global users
-    global transactions
+def api_transfer():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": False, "text": "Invalid request data"})
 
-    data = request.json
-    recipient_name = data.get("recipient_name")
-    from_id = data.get("from_id")
-    to_id = data.get("to_id")
-    amount = data.get("amount")
-    description = data.get("description")
-    response = {
-        "status": False,
-        "text": ""
-    }
+        recipient_name = data.get("recipient_name")
+        from_id = data.get("from_id")
+        to_id = data.get("to_id")
+        amount = data.get("amount")
+        description = data.get("description", "Transfer")
 
-    if from_id not in users or to_id not in users:
-        response["text"] = "ID's isn't registered"
-    elif f'{users[to_id]["first_name"]} {users[to_id]["last_name"]}' != recipient_name:
-        response["text"] = "The person name isn't found."
-    elif from_id == to_id:
-        response["text"] = "You can't transfer to yourself"
-    elif amount > users[from_id]["balance"]:
-        response["text"] = f"Insufficient balance: you have only {users[from_id]['balance']} in your account"
-    else:
-        from_transaction = {
-            "type": "Transfer",
-            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "description": description,
-            "amount": amount
+        # Validate required fields
+        if not all([recipient_name, from_id, to_id, amount]):
+            return jsonify({"status": False, "text": "All transfer fields are required"})
+
+        if amount <= 0:
+            return jsonify({"status": False, "text": "Amount must be greater than 0"})
+
+        response = {
+            "status": False,
+            "text": ""
         }
-        to_transaction = {
-            "type": "Transfer",
-            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "description": description,
-            "amount": amount
-        }
-        if from_id not in transactions:
-            transactions[from_id] = [from_transaction]
+
+        # Check if both users exist
+        from_user = db_handler.get_user_by_id(from_id)
+        to_user = db_handler.get_user_by_id(to_id)
+
+        if not from_user:
+            response["text"] = "Sender ID isn't registered"
+        elif not to_user:
+            response["text"] = "Recipient ID isn't registered"
+        elif f'{to_user["first_name"]} {to_user["last_name"]}' != recipient_name:
+            response["text"] = "The person name isn't found."
+        elif from_id == to_id:
+            response["text"] = "You can't transfer to yourself"
         else:
-            transactions[from_id].append(from_transaction)
-        if to_id not in transactions:
-            transactions[to_id] = [to_transaction]
-        else:
-            transactions[to_id].append(to_transaction)
+            # Perform transfer
+            success, message = db_handler.transfer_money(from_id, to_id, amount, description)
+            response["status"] = success
+            response["text"] = message
 
-        users[from_id]["balance"] -= amount
-        users[to_id]["balance"] += amount
-        response["status"] = True
-
-
-    return json.dumps(response)
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"status": False, "text": "Transfer failed. Please try again."})
 
 
-app.run(debug=True)
+# Error Handlers
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('/templates/login.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({"status": False, "text": "Internal server error"}), 500
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
