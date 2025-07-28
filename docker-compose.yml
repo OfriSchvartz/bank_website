@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  aurora-bank:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+    volumes:
+      - bank_data:/app/backend
+    restart: unless-stopped
+
+volumes:
+  bank_data:
