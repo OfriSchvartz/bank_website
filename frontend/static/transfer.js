@@ -68,7 +68,7 @@ async function checkTransfer() {
     const description = document.getElementById("description").value.trim();
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/transfer", {
+        const response = await fetch("/api/transfer", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'

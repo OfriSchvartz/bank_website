@@ -110,7 +110,7 @@ function showTransactions(transactions) {
 
 async function updateUserData() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/get_user_data", {
+        const response = await fetch("/api/get_user_data", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -180,7 +180,7 @@ async function handleWithdraw(event) {
     closeModal('withdrawModal');
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/withdraw", {
+        const response = await fetch("/api/withdraw", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -228,7 +228,7 @@ async function handleDeposit(event) {
     closeModal('depositModal');
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/deposit", {
+        const response = await fetch("/api/deposit", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
