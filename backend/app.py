@@ -3,7 +3,7 @@ import os
 import json
 import db_handler
 
-frontend_path = os.path.abspath('../frontend')
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'frontend')
 app = Flask(__name__, template_folder=frontend_path)
 
 
@@ -375,4 +375,4 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
