@@ -6,8 +6,14 @@ import db_handler
 frontend_path = os.path.abspath('../frontend')
 app = Flask(__name__, template_folder=frontend_path)
 
+
 # Initialize database on startup
 db_handler.init_database()
+
+transactions = {
+
+}
+
 
 
 # Page Routes
