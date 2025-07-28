@@ -7,25 +7,25 @@ frontend_path = os.path.abspath('../frontend')
 app = Flask(__name__, template_folder=frontend_path)
 
 users = {
-    "206978082": {
-        "first_name": "Ofri",
-        "last_name": "Schvartz",
-        "date_of_birth": "06/06/1999",
+    "305679442": {
+        "first_name": "John",
+        "last_name": "abruzi",
+        "date_of_birth": "23/7/1976",
         "gender": "Male",
-        "email": "ofrischvartz@gmail.com",
-        "password": "Aa!23!23",
-        "phone": "0526367408",
-        "address": "Shaked 5, Magal",
-        "zip": "2244508",
+        "email": "John528@gmail.com",
+        "password": "Cc#123456",
+        "phone": "0558769765",
+        "address": "Israel",
+        "zip": "54329",
         "balance": 5000
     },
-    "206978083": {
-        "first_name": "John",
-        "last_name": "Doe",
+    "269783214": {
+        "first_name": "yossi",
+        "last_name": "tbag",
         "date_of_birth": "01/01/1990",
         "gender": "Male",
-        "email": "JohnDoe@gmail.com",
-        "password": "Ss!23123",
+        "email": "yossidad@gmail.com",
+        "password": "Cc#123456",
         "phone": "0557958234",
         "address": "123 Main St, Springfield",
         "zip": "1234567",
