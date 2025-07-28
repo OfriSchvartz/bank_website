@@ -424,12 +424,12 @@ body {
 }
 
 .action-card {
-    background: linear-gradient(135deg, #F5F5DC 0%, #FFF8DC 100%);
+    background: linear-gradient(135deg, #E2E8C0 0%, #FFF8DC 100%);
     padding: 2rem;
     border-radius: 16px;
     text-align: center;
     cursor: pointer;
-    border: 2px solid #E6E6FA;
+    border: 2px solid #E2E8C0;
     box-shadow: 0 4px 16px rgba(106, 90, 205, 0.1);
 }
 
