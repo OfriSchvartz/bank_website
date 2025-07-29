@@ -77,7 +77,7 @@
         <div class="transactions-card">
             <div class="transactions-header">
                 <h2 class="transactions-title">Recent Transactions</h2>
-                <button class="view-all-btn">
+                <button class="view-all-btn" onclick="loadMoreTransactions()">
                     <i class="fas fa-list"></i> View All
                 </button>
             </div>
@@ -158,6 +158,35 @@
                     <i class="fas fa-plus-circle"></i> Confirm Deposit
                 </button>
             </form>
+        </div>
+    </div>
+            <!-- View All Transactions Modal -->
+    <div class="modal" id="allTransactionsModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title">All Transactions</h3>
+                <button class="close-btn" onclick="closeModal('allTransactionsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allTransactionsBody">
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading all transactions...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

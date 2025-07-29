@@ -8,3 +8,8 @@ README.md
 .env
 .venv
 venv/
+backend/venv/
+.idea/
+.vscode/
+*.swp
+*.swo

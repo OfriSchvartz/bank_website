@@ -110,7 +110,7 @@ function showTransactions(transactions) {
 
 async function updateUserData() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/get_user_data", {
+        const response = await fetch("/api/get_user_data", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -180,7 +180,7 @@ async function handleWithdraw(event) {
     closeModal('withdrawModal');
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/withdraw", {
+        const response = await fetch("/api/withdraw", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -228,7 +228,7 @@ async function handleDeposit(event) {
     closeModal('depositModal');
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/deposit", {
+        const response = await fetch("/api/deposit", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -302,3 +302,78 @@ window.addEventListener('DOMContentLoaded', async function() {
         }
     });
 });
+async function showAllTransactions() {
+    showModal('allTransactionsModal');
+    
+    try {
+        const response = await fetch("/api/get_user_data", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "id": localStorage.getItem("account_number")
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.status) {
+            showAllTransactionsError('Failed to load transactions');
+            return;
+        }
+
+        // Show all transactions in the modal
+        showAllTransactionsData(data.transactions);
+        
+    } catch (error) {
+        showAllTransactionsError('Connection error. Please try again.');
+    }
+}
+
+function showAllTransactionsData(transactions) {
+    const tbody = document.getElementById("allTransactionsBody");
+    tbody.innerHTML = "";
+
+    if (transactions.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <p>No transactions found</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    // Show all transactions (reversed for newest first)
+    transactions.reverse().forEach(transaction => {
+        const row = document.createElement('tr');
+        const isPositive = transaction.amount > 0;
+        const typeClass = `type-${transaction.type.toLowerCase()}`;
+        
+        row.innerHTML = `
+            <td>${formatDateTime(transaction.date)}</td>
+            <td>${transaction.description || 'No description'}</td>
+            <td class="transaction-amount ${isPositive ? 'amount-positive' : 'amount-negative'}">
+                ${isPositive ? '+' : ''}₪${formatCurrency(Math.abs(transaction.amount))}
+            </td>
+            <td><span class="transaction-type ${typeClass}">${transaction.type}</span></td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function showAllTransactionsError(message) {
+    const tbody = document.getElementById("allTransactionsBody");
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="4" class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>${message}</p>
+            </td>
+        </tr>
+    `;
+}
